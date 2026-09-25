@@ -52,6 +52,7 @@ namespace dash
                 const std::vector<IServiceDescription *>& GetServiceDescriptions    ()  const;
                 const std::vector<IContentProtection *>&  GetContentProtections     ()  const;
                 const std::vector<IAdaptationSet *>&      GetAdaptationSets         ()  const;
+                const std::vector<IAdaptationSet *>&      GetEmptyAdaptationSets    ()  const;
                 const std::vector<ISubset *>&             GetSubsets                ()  const;
                 const std::vector<IDescriptor *>&         GetSupplementalProperties ()  const;
                 const std::vector<ILabel *>&              GetGroupLabels            ()  const;
@@ -74,6 +75,7 @@ namespace dash
                 void    AddServiceDescription       (ServiceDescription* serviceDescription);
                 void    AddContentProtection        (ContentProtection *contentProtection);
                 void    AddAdaptationSet            (AdaptationSet *AdaptationSet);
+                void    AddEmptyAdaptationSet       (AdaptationSet *emptyAdaptationSet);
                 void    AddSubset                   (Subset *subset);
                 void    AddSupplementalProperty     (Descriptor *supplementalProperty);
                 void    AddGroupLabel               (Label *groupLabel);
@@ -97,6 +99,7 @@ namespace dash
                 std::vector<ServiceDescription *>   serviceDescriptions;
                 std::vector<ContentProtection *>    contentProtections;
                 std::vector<AdaptationSet *>        adaptationSets;
+                std::vector<AdaptationSet *>        emptyAdaptationSets;
                 std::vector<Subset *>               subsets;
                 std::vector<Descriptor *>           supplementalProperties;
                 std::vector<Label *>                groupLabels;

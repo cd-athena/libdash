@@ -41,24 +41,41 @@ namespace dash
                  *  the value shall be assumed to be the sum of the previous <tt><b>S</b></tt> element's earliest presentation time and contiguous duration 
                  *  (i.e. previous <tt><b>S</b>\@t</tt> + \c \@d * (\c \@r + 1)).\n\n
                  *  \em StartTime corresponds to the \c \@t attribute.
-                 *  @return     an unsigned integer
+                 *  @return     an unsigned 64-bit integer
                  */
-                virtual uint32_t    GetStartTime    ()  const = 0;
+                virtual uint64_t    GetStartTime            ()  const = 0;
+
+                /**
+                 *  Returns an integer that specifies the Segment number of the first Segment in the series.
+                 *  If not present, the number is derived from the previous <tt><b>S</b></tt> element, or from \c \@startNumber for the first one. \n\n
+                 *  \em Number corresponds to the \c \@n attribute. Use the raw attributes to check whether it was present.
+                 *  @return     an unsigned 64-bit integer
+                 */
+                virtual uint64_t    GetNumber               ()  const = 0;
 
                 /**
                  *  Returns the integer that specifies the Segment duration, in units of the value of the \c \@timescale. \n\n
                  *  \em Duration corresponds to the \c \@d attribute.
-                 *  @return     an unsigned integer
+                 *  @return     an unsigned 64-bit integer
                  */
-                virtual uint32_t    GetDuration     ()  const = 0;
+                virtual uint64_t    GetDuration             ()  const = 0;
 
                 /**
                  *  Returns an integer that specifies the repeat count of the number of following contiguous Segments with the same duration expressed by the value of \c \@d.
                  *  This value is zero-based (e.g. a value of three means four Segments in the contiguous series). \n\n
+                 *  A negative value (e.g. \c -1) means that the duration repeats until the start of the next <tt><b>S</b></tt> element,
+                 *  the end of the Period or the next MPD update. \n\n
                  *  \em RepeatCount corresponds to the \c \@r attribute.
+                 *  @return     a signed 64-bit integer
+                 */
+                virtual int64_t     GetRepeatCount          ()  const = 0;
+
+                /**
+                 *  Returns an integer that specifies how many Segments are contained in each Segment Sequence described by this element (default 1). \n\n
+                 *  \em SegmentsInSequence corresponds to the \c \@k attribute.
                  *  @return     an unsigned integer
                  */
-                virtual uint32_t    GetRepeatCount  ()  const = 0;
+                virtual uint32_t    GetSegmentsInSequence   ()  const = 0;
         };
     }
 }

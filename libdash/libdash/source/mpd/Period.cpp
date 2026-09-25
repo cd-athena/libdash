@@ -38,6 +38,8 @@ Period::~Period ()
         delete(this->baseURLs.at(i));
     for(size_t i = 0; i < this->adaptationSets.size(); i++)
         delete(this->adaptationSets.at(i));
+    for(size_t i = 0; i < this->emptyAdaptationSets.size(); i++)
+        delete(this->emptyAdaptationSets.at(i));
     for(size_t i = 0; i < this->subsets.size(); i++)
         delete(this->subsets.at(i));
     for(size_t i = 0; i < this->supplementalProperties.size(); i++)
@@ -130,6 +132,15 @@ void                                        Period::AddAdaptationSet            
 {
     if(adaptationSet != NULL)
         this->adaptationSets.push_back(adaptationSet);
+}
+const std::vector<IAdaptationSet*>&         Period::GetEmptyAdaptationSets       () const
+{
+    return (std::vector<IAdaptationSet*> &) this->emptyAdaptationSets;
+}
+void                                        Period::AddEmptyAdaptationSet        (AdaptationSet *emptyAdaptationSet)
+{
+    if(emptyAdaptationSet != NULL)
+        this->emptyAdaptationSets.push_back(emptyAdaptationSet);
 }
 const std::vector<ISubset *>&               Period::GetSubsets                   () const
 {

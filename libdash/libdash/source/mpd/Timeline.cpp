@@ -15,35 +15,53 @@ using namespace dash::mpd;
 
 Timeline::Timeline    ()  :
                 startTime(0),
+                number(0),
                 duration(0),
-                repeatCount(0)
+                repeatCount(0),
+                segmentsInSequence(1)
 {
 }
 Timeline::~Timeline   ()
 {
 }
 
-uint32_t    Timeline::GetStartTime     ()  const
+uint64_t    Timeline::GetStartTime          ()  const
 {
     return this->startTime;
 }
-void        Timeline::SetStartTime     (uint32_t startTime) 
+void        Timeline::SetStartTime          (uint64_t startTime)
 {
     this->startTime = startTime;
 }
-uint32_t    Timeline::GetDuration      ()  const
+uint64_t    Timeline::GetNumber             ()  const
+{
+    return this->number;
+}
+void        Timeline::SetNumber             (uint64_t number)
+{
+    this->number = number;
+}
+uint64_t    Timeline::GetDuration           ()  const
 {
     return this->duration;
 }
-void        Timeline::SetDuration      (uint32_t duration) 
+void        Timeline::SetDuration           (uint64_t duration)
 {
     this->duration = duration;
 }
-uint32_t    Timeline::GetRepeatCount   ()  const
+int64_t     Timeline::GetRepeatCount        ()  const
 {
     return this->repeatCount;
 }
-void        Timeline::SetRepeatCount   (uint32_t repeatCount)
+void        Timeline::SetRepeatCount        (int64_t repeatCount)
 {
     this->repeatCount = repeatCount;
+}
+uint32_t    Timeline::GetSegmentsInSequence ()  const
+{
+    return this->segmentsInSequence;
+}
+void        Timeline::SetSegmentsInSequence (uint32_t segmentsInSequence)
+{
+    this->segmentsInSequence = segmentsInSequence;
 }

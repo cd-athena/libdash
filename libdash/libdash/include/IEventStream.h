@@ -54,6 +54,20 @@ namespace dash
                  *  @return     a reference to a string
                  */
                 virtual const std::string&           GetXlinkActuate           ()  const = 0;
+
+                /**
+                 *  Returns a reference to a string that specifies the type of W3C XLINK being used. \n
+                 *  In the context of this document, all references shall be W3C XLINK simple links. The attribute \c @xlink:type is optional with fixed setting \c @xlink:type="simple".
+                 *  @return     a reference to a string
+                 */
+                virtual const std::string&           GetXlinkType              ()  const = 0;
+
+                /**
+                 *  Returns a reference to a string that specifies the desired behaviour of the remote element entity once dereferenced from within an MPD as defined in W3C XLINK. \n
+                 *  In the context of this document, the attribute \c @xlink:show is optional with fixed setting \c @xlink:show="embed".
+                 *  @return     a reference to a string
+                 */
+                virtual const std::string&           GetXlinkShow              ()  const = 0;
                 
                 /**
                  *  Returns a reference to a string that identifies the message scheme. The string may use URN or URL syntax. 

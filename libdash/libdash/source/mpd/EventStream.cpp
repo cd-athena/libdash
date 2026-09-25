@@ -16,6 +16,8 @@ using namespace dash::mpd;
 EventStream::EventStream    ()  :
                  xlinkHref(""),
                  xlinkActuate("onRequest"),
+                 xlinkType("simple"),
+                 xlinkShow("embed"),
                  schemeIdUri(""),
                  value(""),
                  presentationTimeOffset(0),
@@ -51,6 +53,22 @@ const std::string&             EventStream::GetXlinkActuate            ()  const
 void                           EventStream::SetXlinkActuate            (const std::string& xlinkActuate)
 {
     this->xlinkActuate = xlinkActuate;
+}
+const std::string&             EventStream::GetXlinkType               ()  const
+{
+    return this->xlinkType;
+}
+void                           EventStream::SetXlinkType               (const std::string& xlinkType)
+{
+    this->xlinkType = xlinkType;
+}
+const std::string&             EventStream::GetXlinkShow               ()  const
+{
+    return this->xlinkShow;
+}
+void                           EventStream::SetXlinkShow               (const std::string& xlinkShow)
+{
+    this->xlinkShow = xlinkShow;
 }
 const std::string&             EventStream::GetSchemeIdUri             ()  const
 {

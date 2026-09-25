@@ -144,6 +144,14 @@ namespace dash
                 virtual const std::vector<IAdaptationSet *>&        GetAdaptationSets          ()  const = 0;
 
                 /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IAdaptationSet objects that specify Empty Adaptation Sets.\n
+                 *  An Empty Adaptation Set contains no Representations and carries only properties, e.g. to announce an Adaptation Set
+                 *  continuing from a previous Period. For more details see section 5.3.3. of <em>ISO/IEC 23009-1</em>.
+                 *  @return     a reference to a vector of pointers to dash::mpd::IAdaptationSet objects
+                 */
+                virtual const std::vector<IAdaptationSet *>&        GetEmptyAdaptationSets     ()  const = 0;
+
+                /**
                  *  Returns a reference to a vector of pointers to dash::mpd::ISubset objects that specify Subsets.\n
                  *  For more details see section 5.3.8. of <em>ISO/IEC 23009-1, Part 1, 2012</em>.
                  *  @return     a reference to a vector of pointers to dash::mpd::ISubset objects

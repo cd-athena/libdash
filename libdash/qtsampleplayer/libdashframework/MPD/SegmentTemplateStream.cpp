@@ -118,9 +118,9 @@ void                        SegmentTemplateStream::CalculateSegmentStartTimes   
         return;
 
     size_t   numOfTimelines = 0;
-    uint32_t segStartTime   = 0;
-    uint32_t segDuration    = 0;
-    size_t   repeatCount    = 0;
+    uint64_t segStartTime   = 0;
+    uint64_t segDuration    = 0;
+    int64_t  repeatCount    = 0;
 
     numOfTimelines      = this->segmentTemplate->GetSegmentTimeline()->GetTimelines().size();
 
@@ -130,13 +130,17 @@ void                        SegmentTemplateStream::CalculateSegmentStartTimes   
         segStartTime    = this->segmentTemplate->GetSegmentTimeline()->GetTimelines().at(i)->GetStartTime();
         segDuration     = this->segmentTemplate->GetSegmentTimeline()->GetTimelines().at(i)->GetDuration();
 
+        /* TODO: implement negative S@r (repeat until the next S element, the end of the Period or the next MPD update) */
+        if (repeatCount < 0)
+            repeatCount = 0;
+
         if (repeatCount > 0)
         {
-            for (size_t j = 0; j <= repeatCount; j++)
+            for (int64_t j = 0; j <= repeatCount; j++)
             {
                 if (segStartTime > 0)
                 {
-                    this->segmentStartTimes.push_back(segStartTime + segDuration * j);
+                    this->segmentStartTimes.push_back((uint32_t) (segStartTime + segDuration * j));
                 }
                 else
                 {
@@ -146,7 +150,7 @@ void                        SegmentTemplateStream::CalculateSegmentStartTimes   
         }
         else
         {
-            this->segmentStartTimes.push_back(segStartTime);
+            this->segmentStartTimes.push_back((uint32_t) segStartTime);
         }
     }
 }

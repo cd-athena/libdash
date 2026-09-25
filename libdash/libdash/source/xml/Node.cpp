@@ -284,12 +284,8 @@ dash::mpd::SegmentBase*                     Node::ToSegmentBase         ()  cons
 
     for(size_t i = 0; i < subNodes.size(); i++)
     {
-        if (subNodes.at(i)->GetName() == "FailoverContent")
-        {
-            segmentBase->SetFailoverContent(subNodes.at(i)->ToFailoverContent());
-            continue;
-        }
-        if (subNodes.at(i)->GetName() != "Initialization" && subNodes.at(i)->GetName() != "RepresentationIndex")
+        if (subNodes.at(i)->GetName() != "Initialization" && subNodes.at(i)->GetName() != "RepresentationIndex" &&
+            subNodes.at(i)->GetName() != "FailoverContent")
             segmentBase->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
@@ -302,15 +298,23 @@ dash::mpd::Timeline*                        Node::ToTimeline            ()  cons
 
     if (this->HasAttribute("t"))
     {
-        timeline->SetStartTime(strtoul(this->GetAttributeValue("t").c_str(), NULL, 10));
+        timeline->SetStartTime(strtoull(this->GetAttributeValue("t").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("n"))
+    {
+        timeline->SetNumber(strtoull(this->GetAttributeValue("n").c_str(), NULL, 10));
     }
     if (this->HasAttribute("d"))
     {
-        timeline->SetDuration(strtoul(this->GetAttributeValue("d").c_str(), NULL, 10));
+        timeline->SetDuration(strtoull(this->GetAttributeValue("d").c_str(), NULL, 10));
     }
     if (this->HasAttribute("r"))
     {
-        timeline->SetRepeatCount(strtoul(this->GetAttributeValue("r").c_str(), NULL, 10));
+        timeline->SetRepeatCount(strtoll(this->GetAttributeValue("r").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("k"))
+    {
+        timeline->SetSegmentsInSequence(strtoul(this->GetAttributeValue("k").c_str(), NULL, 10));
     }
 
     timeline->AddRawAttributes(this->attributes);
@@ -395,7 +399,8 @@ dash::mpd::SegmentList*                     Node::ToSegmentList         ()  cons
             continue;
         }
         if (subNodes.at(i)->GetName() != "SegmentTimeline" && subNodes.at(i)->GetName() != "BitstreamSwitching" &&
-            subNodes.at(i)->GetName() != "Initialization" && subNodes.at(i)->GetName() != "RepresentationIndex")
+            subNodes.at(i)->GetName() != "Initialization" && subNodes.at(i)->GetName() != "RepresentationIndex" &&
+            subNodes.at(i)->GetName() != "FailoverContent")
             segmentList->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
@@ -429,7 +434,8 @@ dash::mpd::SegmentTemplate*                 Node::ToSegmentTemplate     ()  cons
     for(size_t i = 0; i < subNodes.size(); i++)
     {
         if (subNodes.at(i)->GetName() != "SegmentTimeline" && subNodes.at(i)->GetName() != "BitstreamSwitching" &&
-            subNodes.at(i)->GetName() != "Initialization" && subNodes.at(i)->GetName() != "RepresentationIndex")
+            subNodes.at(i)->GetName() != "Initialization" && subNodes.at(i)->GetName() != "RepresentationIndex" &&
+            subNodes.at(i)->GetName() != "FailoverContent")
             segmentTemplate->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
@@ -673,7 +679,7 @@ dash::mpd::AdaptationSet*                   Node::ToAdaptationSet       ()  cons
     }
     if (this->HasAttribute("subsegmentStartsWithSAP"))
     {
-        adaptationSet->SetMaxHeight((uint8_t) strtoul(this->GetAttributeValue("subsegmentStartsWithSAP").c_str(), NULL, 10));
+        adaptationSet->SetSubsegmentStartsWithSAP((uint8_t) strtoul(this->GetAttributeValue("subsegmentStartsWithSAP").c_str(), NULL, 10));
     }
     if (this->HasAttribute("bitstreamSwitching"))
     {
@@ -804,6 +810,14 @@ dash::mpd::EventStream*                    Node::ToEventStream           ()  con
     {
         eventStream->SetXlinkActuate(this->GetAttributeValue("xlink:actuate"));
     }
+    if (this->HasAttribute("xlink:type"))
+    {
+        eventStream->SetXlinkType(this->GetAttributeValue("xlink:type"));
+    }
+    if (this->HasAttribute("xlink:show"))
+    {
+        eventStream->SetXlinkShow(this->GetAttributeValue("xlink:show"));
+    }
     if (this->HasAttribute("schemeIdUri"))
     {
         eventStream->SetSchemeIdUri(this->GetAttributeValue("schemeIdUri"));
@@ -818,7 +832,7 @@ dash::mpd::EventStream*                    Node::ToEventStream           ()  con
     }
     if (this->HasAttribute("presentationTimeOffset"))
     {
-        eventStream->SetPresentationTimeOffset(strtoul(this->GetAttributeValue("presentationTimeOffset").c_str(), NULL, 10));
+        eventStream->SetPresentationTimeOffset(strtoull(this->GetAttributeValue("presentationTimeOffset").c_str(), NULL, 10));
     }
 
     for(size_t i = 0; i < subNodes.size(); i++)
@@ -1120,6 +1134,11 @@ dash::mpd::Period*                          Node::ToPeriod              ()  cons
         if (subNodes.at(i)->GetName() == "AdaptationSet")
         {
             period->AddAdaptationSet(subNodes.at(i)->ToAdaptationSet());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "EmptyAdaptationSet")
+        {
+            period->AddEmptyAdaptationSet(subNodes.at(i)->ToAdaptationSet());
             continue;
         }
         if (subNodes.at(i)->GetName() == "Subset")
@@ -1961,11 +1980,11 @@ void                                        Node::SetCommonValuesForSeg (dash::m
     }
     if (this->HasAttribute("presentationTimeOffset"))
     {
-        object.SetPresentationTimeOffset(strtoul(this->GetAttributeValue("presentationTimeOffset").c_str(), NULL, 10));
+        object.SetPresentationTimeOffset(strtoull(this->GetAttributeValue("presentationTimeOffset").c_str(), NULL, 10));
     }
     if (this->HasAttribute("presentationDuration"))
     {
-        object.SetPresentationDuration(strtoul(this->GetAttributeValue("presentationDuration").c_str(), NULL, 10));
+        object.SetPresentationDuration(strtoull(this->GetAttributeValue("presentationDuration").c_str(), NULL, 10));
     }
     if (this->HasAttribute("timeShiftBufferDepth"))
     {
@@ -1998,6 +2017,11 @@ void                                        Node::SetCommonValuesForSeg (dash::m
         if (subNodes.at(i)->GetName() == "RepresentationIndex")
         {
             object.SetRepresentationIndex(subNodes.at(i)->ToURLType(dash::metrics::IndexSegment));
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "FailoverContent")
+        {
+            object.SetFailoverContent(subNodes.at(i)->ToFailoverContent());
             continue;
         }
     }
