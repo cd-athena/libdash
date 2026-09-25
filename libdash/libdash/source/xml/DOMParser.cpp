@@ -64,17 +64,17 @@ Node*   DOMParser::ProcessNode              ()
 
     if(type == Text || type == CData)
     {
-       const char* text = (const char *) xmlTextReaderReadString(this->reader);
+        /* xmlTextReaderConstValue returns the content of text and CDATA nodes; xmlTextReaderReadString
+         * does not return CDATA content in all libxml2 versions */
+        const char* text = (const char *) xmlTextReaderConstValue(this->reader);
 
-       if(text != NULL)
-       {
-           Node *node = new Node();
-           node->SetType(Text);
-           node->SetText(text);
-           xmlFree((void *) text);
-           return node;
-       }
-       return NULL;
+        if(text == NULL)
+            return NULL;
+
+        Node *node = new Node();
+        node->SetType(Text);
+        node->SetText(text);
+        return node;
     }
 
     if(type != Start || xmlTextReaderConstName(this->reader) == NULL)
