@@ -24,6 +24,11 @@
 #include "config.h"
 
 #include "IMPDElement.h"
+#include "IDescriptor.h"
+#include "ISelectionInfo.h"
+#include "IServiceDescription.h"
+#include "IAlternativeMPDEvent.h"
+#include "IAlternativeMPDReplaceEvent.h"
 
 namespace dash
 {
@@ -60,7 +65,7 @@ namespace dash
                  *
                  *  @return     an unsigned integer
                  */
-                virtual uint32_t             GetId                 ()  const = 0;
+                virtual uint64_t             GetId                 ()  const = 0;
                 
                 /**
                  *  Returns the reference to a string that specifies whether the information in the body and the information in the \c @messageData is encoded. \n
@@ -82,6 +87,57 @@ namespace dash
                  *  @return     a reference to a string
                  */
                 virtual const std::string&   GetMessageData        ()  const = 0;
+
+                /**
+                 *  Returns the status of the event (<em>ISO/IEC 23009-1, 6th edition</em>, Table 44): \c "update" (an update of an earlier event with the same
+                 *  \c \@schemeIdUri, \c \@value and \c \@id), \c "repeat" (default; a repeat of an earlier event, still to be dispatched) or \c "none". \n\n
+                 *  Corresponds to the \c \@status attribute.
+                 *  @return     a reference to a string
+                 */
+                virtual const std::string&   GetStatus             ()  const = 0;
+
+                /**
+                 *  Returns the string content (message) of the event element, e.g. the identifier of a Service Description to be activated.
+                 *  XML content in other namespaces is available through GetAdditionalSubNodes().
+                 *  @return     a reference to a string
+                 */
+                virtual const std::string&   GetContent            ()  const = 0;
+
+                /**
+                 *  Returns a pointer to a dash::mpd::ISelectionInfo object for nonlinear storyline events (Annex L.3.4), or NULL if not present.
+                 *  @return     a pointer to a dash::mpd::ISelectionInfo object
+                 */
+                virtual const ISelectionInfo *                      GetSelectionInfo        ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IServiceDescription objects carried by a Service Description event (Annex K.6).
+                 *  @return     a reference to a vector of pointers to dash::mpd::IServiceDescription objects
+                 */
+                virtual const std::vector<IServiceDescription *>&   GetServiceDescriptions  ()  const = 0;
+
+                /**
+                 *  Returns a pointer to a dash::mpd::IAlternativeMPDEvent object for Alternative MPD insertion events (subclause 5.16.3), or NULL if not present.
+                 *  @return     a pointer to a dash::mpd::IAlternativeMPDEvent object
+                 */
+                virtual const IAlternativeMPDEvent *                GetInsertPresentation   ()  const = 0;
+
+                /**
+                 *  Returns a pointer to a dash::mpd::IAlternativeMPDReplaceEvent object for Alternative MPD replacement events (subclause 5.16.4), or NULL if not present.
+                 *  @return     a pointer to a dash::mpd::IAlternativeMPDReplaceEvent object
+                 */
+                virtual const IAlternativeMPDReplaceEvent *         GetReplacePresentation  ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IDescriptor objects that specify supplemental information about the event.
+                 *  @return     a reference to a vector of pointers to dash::mpd::IDescriptor objects
+                 */
+                virtual const std::vector<IDescriptor *>&           GetSupplementalProperties   ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IDescriptor objects that specify information about the event that is essential for processing it.
+                 *  @return     a reference to a vector of pointers to dash::mpd::IDescriptor objects
+                 */
+                virtual const std::vector<IDescriptor *>&           GetEssentialProperties      ()  const = 0;
         };
     }
 }

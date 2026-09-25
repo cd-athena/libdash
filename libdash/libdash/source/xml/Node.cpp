@@ -609,6 +609,140 @@ dash::mpd::CMCDParameters*                  Node::ToCMCDParameters      ()  cons
     cmcdParameters->AddRawAttributes(this->attributes);
     return cmcdParameters;
 }
+dash::mpd::PlaybackRestrictions*            Node::ToPlaybackRestrictions    ()  const
+{
+    dash::mpd::PlaybackRestrictions* playbackRestrictions = new dash::mpd::PlaybackRestrictions();
+
+    if (this->HasAttribute("skipAfter"))
+    {
+        playbackRestrictions->SetSkipAfter(this->GetAttributeValue("skipAfter"));
+    }
+
+    playbackRestrictions->AddRawAttributes(this->attributes);
+    return playbackRestrictions;
+}
+dash::mpd::SelectionInfo*                   Node::ToSelectionInfo       ()  const
+{
+    dash::mpd::SelectionInfo* selectionInfo = new dash::mpd::SelectionInfo();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("selectionInfo"))
+    {
+        selectionInfo->SetSelectionInfo(this->GetAttributeValue("selectionInfo"));
+    }
+    if (this->HasAttribute("contactURL"))
+    {
+        selectionInfo->SetContactURL(this->GetAttributeValue("contactURL"));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        if (subNodes.at(i)->GetName() == "Selection")
+        {
+            selectionInfo->AddSelection(subNodes.at(i)->ToSelection());
+            continue;
+        }
+        selectionInfo->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    selectionInfo->AddRawAttributes(this->attributes);
+    return selectionInfo;
+}
+dash::mpd::Selection*                       Node::ToSelection           ()  const
+{
+    dash::mpd::Selection* selection = new dash::mpd::Selection();
+
+    if (this->HasAttribute("dataEncoding"))
+    {
+        selection->SetDataEncoding(this->GetAttributeValue("dataEncoding"));
+    }
+    if (this->HasAttribute("parameter"))
+    {
+        selection->SetParameter(this->GetAttributeValue("parameter"));
+    }
+    if (this->HasAttribute("data"))
+    {
+        selection->SetData(this->GetAttributeValue("data"));
+    }
+
+    selection->AddRawAttributes(this->attributes);
+    return selection;
+}
+template <class AlternativeMPDEventType>
+void                                        Node::SetCommonValuesForAltMPD  (AlternativeMPDEventType& object) const
+{
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("uri"))
+    {
+        object.SetUri(this->GetAttributeValue("uri"));
+    }
+    if (this->HasAttribute("earliestResolutionTimeOffset"))
+    {
+        object.SetEarliestResolutionTimeOffset(strtoull(this->GetAttributeValue("earliestResolutionTimeOffset").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("serviceDescriptionId"))
+    {
+        object.SetServiceDescriptionId(strtoul(this->GetAttributeValue("serviceDescriptionId").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("maxDuration"))
+    {
+        object.SetMaxDuration(strtoull(this->GetAttributeValue("maxDuration").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("executeOnce"))
+    {
+        object.SetExecuteOnce(dash::helpers::String::ToBool(this->GetAttributeValue("executeOnce")));
+    }
+    if (this->HasAttribute("noJump"))
+    {
+        object.SetNoJump(strtoll(this->GetAttributeValue("noJump").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("skipAfter"))
+    {
+        object.SetSkipAfter(this->GetAttributeValue("skipAfter"));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        if (subNodes.at(i)->GetName() == "SupplementalProperty")
+        {
+            object.AddSupplementalProperty(subNodes.at(i)->ToDescriptor());
+            continue;
+        }
+        object.AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    object.AddRawAttributes(this->attributes);
+}
+dash::mpd::AlternativeMPDEvent*             Node::ToAlternativeMPDEvent ()  const
+{
+    dash::mpd::AlternativeMPDEvent* alternativeMPDEvent = new dash::mpd::AlternativeMPDEvent();
+
+    SetCommonValuesForAltMPD(*alternativeMPDEvent);
+
+    return alternativeMPDEvent;
+}
+dash::mpd::AlternativeMPDReplaceEvent*      Node::ToAlternativeMPDReplaceEvent  ()  const
+{
+    dash::mpd::AlternativeMPDReplaceEvent* replaceEvent = new dash::mpd::AlternativeMPDReplaceEvent();
+
+    SetCommonValuesForAltMPD(*replaceEvent);
+
+    if (this->HasAttribute("returnOffset"))
+    {
+        replaceEvent->SetReturnOffset(strtoull(this->GetAttributeValue("returnOffset").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("clip"))
+    {
+        replaceEvent->SetClip(dash::helpers::String::ToBool(this->GetAttributeValue("clip")));
+    }
+    if (this->HasAttribute("startWithOffset"))
+    {
+        replaceEvent->SetStartWithOffset(dash::helpers::String::ToBool(this->GetAttributeValue("startWithOffset")));
+    }
+
+    return replaceEvent;
+}
 dash::mpd::SegmentURL*                      Node::ToSegmentURL          ()  const
 {
     dash::mpd::SegmentURL *segmentUrl = new dash::mpd::SegmentURL();
@@ -1054,17 +1188,24 @@ dash::mpd::Event*                          Node::ToEvent                ()  cons
 {
     dash::mpd::Event *event = new dash::mpd::Event();
 
+    std::vector<Node *> subNodes = this->GetSubNodes();
+    std::string         content;
+
     if (this->HasAttribute("presentationTime"))
     {
-        event->SetPresentationTime(strtoul(this->GetAttributeValue("presentationTime").c_str(), NULL, 10));
+        event->SetPresentationTime(strtoull(this->GetAttributeValue("presentationTime").c_str(), NULL, 10));
     }
-        if (this->HasAttribute("duration"))
+    if (this->HasAttribute("duration"))
     {
         event->SetDuration(this->GetAttributeValue("duration"));
     }
     if (this->HasAttribute("id"))
     {
-        event->SetId(strtoul(this->GetAttributeValue("id").c_str(), NULL, 10));
+        event->SetId(strtoull(this->GetAttributeValue("id").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("status"))
+    {
+        event->SetStatus(this->GetAttributeValue("status"));
     }
     if (this->HasAttribute("contentEncoding"))
     {
@@ -1074,6 +1215,47 @@ dash::mpd::Event*                          Node::ToEvent                ()  cons
     {
         event->SetMessageData(this->GetAttributeValue("messageData"));
     }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        if (subNodes.at(i)->GetType() == 3) // XML text node (see NodeType in DOMParser.h)
+        {
+            content += subNodes.at(i)->GetText();
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "SelectionInfo")
+        {
+            event->SetSelectionInfo(subNodes.at(i)->ToSelectionInfo());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "ServiceDescription")
+        {
+            event->AddServiceDescription(subNodes.at(i)->ToServiceDescription());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "InsertPresentation")
+        {
+            event->SetInsertPresentation(subNodes.at(i)->ToAlternativeMPDEvent());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "ReplacePresentation")
+        {
+            event->SetReplacePresentation(subNodes.at(i)->ToAlternativeMPDReplaceEvent());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "SupplementalProperty")
+        {
+            event->AddSupplementalProperty(subNodes.at(i)->ToDescriptor());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "EssentialProperty")
+        {
+            event->AddEssentialProperty(subNodes.at(i)->ToDescriptor());
+            continue;
+        }
+        event->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+    event->SetContent(content);
 
     event->AddRawAttributes(this->attributes);
     return event;
@@ -1323,6 +1505,11 @@ dash::mpd::ServiceDescription*            Node::ToServiceDescription       ()  c
         if (subNodes.at(i)->GetName() == "ClientDataReporting")
         {
             serviceDescription->AddClientDataReporting(subNodes.at(i)->ToClientDataReporting());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "PlaybackRestrictions")
+        {
+            serviceDescription->AddPlaybackRestrictions(subNodes.at(i)->ToPlaybackRestrictions());
             continue;
         }
         serviceDescription->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));

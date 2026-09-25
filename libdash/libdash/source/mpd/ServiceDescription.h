@@ -23,6 +23,7 @@
 #include "OperatingBandwidth.h"
 #include "ContentSteering.h"
 #include "ClientDataReporting.h"
+#include "PlaybackRestrictions.h"
 
 namespace dash
 {
@@ -41,6 +42,7 @@ namespace dash
                 const std::vector<IOperatingBandwidth *>&  GetOperatingBandwidth     ()  const;
                 const std::vector<IContentSteering *>&     GetContentSteerings       ()  const;
                 const std::vector<IClientDataReporting *>& GetClientDataReportings   ()  const;
+                const std::vector<IPlaybackRestrictions *>& GetPlaybackRestrictions  ()  const;
                 uint32_t                                   GetId                     ()  const;
 
                 void    AddScope                 (Descriptor* scope);
@@ -50,6 +52,7 @@ namespace dash
                 void    AddOperatingBandwidth    (OperatingBandwidth* operatingBandwidth);
                 void    AddContentSteering       (ContentSteering* contentSteering);
                 void    AddClientDataReporting   (ClientDataReporting* clientDataReporting);
+                void    AddPlaybackRestrictions  (PlaybackRestrictions* playbackRestrictions);
                 void    SetId                    (uint32_t id);
 
             private:
@@ -60,6 +63,7 @@ namespace dash
                 std::vector<IOperatingBandwidth *>   operatingBandwidth;
                 std::vector<IContentSteering *>      contentSteerings;
                 std::vector<IClientDataReporting *>  clientDataReportings;
+                std::vector<IPlaybackRestrictions *> playbackRestrictions;
                 uint32_t                             id;
                 
         };

@@ -64,6 +64,9 @@
 #include "../mpd/ContentSteering.h"
 #include "../mpd/Location.h"
 #include "../mpd/ClientDataReporting.h"
+#include "../mpd/PlaybackRestrictions.h"
+#include "../mpd/SelectionInfo.h"
+#include "../mpd/AlternativeMPDEvent.h"
 #include "../mpd/SegmentURL.h"
 #include "../mpd/ServiceDescription.h"
 #include "../mpd/SubRepresentation.h"
@@ -155,6 +158,13 @@ namespace dash
                 dash::mpd::Location*                        ToLocation              ()  const;
                 dash::mpd::ClientDataReporting*             ToClientDataReporting   ()  const;
                 dash::mpd::CMCDParameters*                  ToCMCDParameters        ()  const;
+                dash::mpd::PlaybackRestrictions*            ToPlaybackRestrictions  ()  const;
+                dash::mpd::SelectionInfo*                   ToSelectionInfo         ()  const;
+                dash::mpd::Selection*                       ToSelection             ()  const;
+                dash::mpd::AlternativeMPDEvent*             ToAlternativeMPDEvent   ()  const;
+                dash::mpd::AlternativeMPDReplaceEvent*      ToAlternativeMPDReplaceEvent    ()  const;
+                template <class AlternativeMPDEventType>
+                void                                        SetCommonValuesForAltMPD    (AlternativeMPDEventType& object) const;
                 dash::mpd::SegmentURL*                      ToSegmentURL            ()  const;
                 dash::mpd::SubRepresentation*               ToSubRepresentation     ()  const;
                 dash::mpd::Subset*                          ToSubset                ()  const;

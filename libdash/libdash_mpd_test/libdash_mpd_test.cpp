@@ -8,6 +8,7 @@
  *   libdash_mpd_test urlparams <url_parameters.mpd>       checks RequestParam and EventStream children
  *   libdash_mpd_test steering  <content_steering.mpd>     checks ContentSteering and @serviceLocation
  *   libdash_mpd_test cmcd      <cmcd.mpd>                 checks ClientDataReporting and CMCDParameters
+ *   libdash_mpd_test altmpd    <alternative_mpd.mpd>      checks Alternative MPD events, Event content and PlaybackRestrictions
  *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses
  *
  * This source code and its use and distribution, is subject to the terms
@@ -339,6 +340,101 @@ static int TestCMCD (IDASHManager *manager, char *path)
     delete mpd;
     return 0;
 }
+static int TestAlternativeMPD (IDASHManager *manager, char *path)
+{
+    IMPD *mpd = manager->Open(path);
+    CHECK(mpd != NULL);
+    if (!mpd)
+        return 1;
+
+    // ServiceDescription.PlaybackRestrictions
+    const std::vector<IPlaybackRestrictions *> &restrictions = mpd->GetServiceDescriptions().at(0)->GetPlaybackRestrictions();
+    CHECK(restrictions.size() == 2);
+    CHECK(restrictions.size() == 2 && restrictions.at(0)->GetSkipAfter() == "PT15S");
+    CHECK(restrictions.size() == 2 && restrictions.at(1)->GetSkipAfter() == "PT0S");
+
+    const std::vector<IEventStream *> &streams = mpd->GetPeriods().at(0)->GetEventStreams();
+    CHECK(streams.size() == 4);
+    if (streams.size() != 4)
+        return 1;
+
+    // Insertion event
+    IEvent *insertEvent = streams.at(0)->GetEvents().at(0);
+    CHECK(insertEvent->GetId() == 1);
+    CHECK(insertEvent->GetStatus() == "repeat");
+    CHECK(insertEvent->GetReplacePresentation() == NULL);
+    const IAlternativeMPDEvent *insert = insertEvent->GetInsertPresentation();
+    CHECK(insert != NULL);
+    if (insert)
+    {
+        CHECK(insert->GetUri() == "https://ads.example.com/ad1.mpd");
+        CHECK(insert->HasEarliestResolutionTimeOffset() && insert->GetEarliestResolutionTimeOffset() == 30000);
+        CHECK(insert->HasServiceDescriptionId() && insert->GetServiceDescriptionId() == 1250);
+        CHECK(insert->GetMaxDuration() == 30000);
+        CHECK(insert->IsExecuteOnce());
+        CHECK(insert->GetNoJump() == 2);
+        CHECK(insert->GetSkipAfter() == "PT5S");
+        CHECK(insert->GetSupplementalProperties().size() == 1 && insert->GetSupplementalProperties().at(0)->GetValue() == "midroll");
+    }
+    CHECK(insertEvent->GetSupplementalProperties().size() == 1 && insertEvent->GetSupplementalProperties().at(0)->GetValue() == "insert");
+    CHECK(insertEvent->GetAdditionalSubNodes().empty());
+    CHECK(insertEvent->GetContent().empty());
+
+    // Replacement events
+    IEvent *replaceEvent = streams.at(1)->GetEvents().at(0);
+    CHECK(replaceEvent->GetStatus() == "update");
+    const IAlternativeMPDReplaceEvent *replace = replaceEvent->GetReplacePresentation();
+    CHECK(replace != NULL);
+    if (replace)
+    {
+        CHECK(replace->GetUri() == "https://ads.example.com/ad2.mpd");
+        CHECK(replace->HasReturnOffset() && replace->GetReturnOffset() == 20000);
+        CHECK(replace->GetMaxDuration() == 15000);
+        CHECK(!replace->IsClip());
+        CHECK(!replace->IsStartWithOffset());
+    }
+    CHECK(replaceEvent->GetEssentialProperties().size() == 1 && replaceEvent->GetEssentialProperties().at(0)->GetSchemeIdUri() == "urn:example:essential");
+    const IAlternativeMPDReplaceEvent *replaceDefaults = streams.at(1)->GetEvents().at(1)->GetReplacePresentation();
+    CHECK(replaceDefaults != NULL);
+    if (replaceDefaults)
+    {
+        CHECK(!replaceDefaults->HasReturnOffset());
+        CHECK(replaceDefaults->IsClip());
+        CHECK(replaceDefaults->IsStartWithOffset());
+        CHECK(!replaceDefaults->HasEarliestResolutionTimeOffset());
+        CHECK(!replaceDefaults->HasServiceDescriptionId());
+        CHECK(replaceDefaults->GetMaxDuration() == 2251799813685247ULL);
+        CHECK(!replaceDefaults->IsExecuteOnce());
+        CHECK(replaceDefaults->GetNoJump() == 0);
+        CHECK(replaceDefaults->GetSkipAfter() == "PT0S");
+    }
+
+    // Service Description events: string content and embedded ServiceDescription
+    IEvent *sdEvent = streams.at(2)->GetEvents().at(0);
+    CHECK(sdEvent->GetContent() == "1250");
+    CHECK(sdEvent->GetId() == 4294967297ULL);
+    IEvent *sdEvent2 = streams.at(2)->GetEvents().at(1);
+    CHECK(sdEvent2->GetServiceDescriptions().size() == 1);
+    CHECK(sdEvent2->GetServiceDescriptions().size() == 1 && sdEvent2->GetServiceDescriptions().at(0)->GetPlaybackRestrictions().size() == 1);
+    CHECK(sdEvent2->GetServiceDescriptions().size() == 1 && sdEvent2->GetServiceDescriptions().at(0)->GetPlaybackRestrictions().at(0)->GetSkipAfter() == "PT30S");
+
+    // Nonlinear storyline event
+    const ISelectionInfo *selectionInfo = streams.at(3)->GetEvents().at(0)->GetSelectionInfo();
+    CHECK(selectionInfo != NULL);
+    if (selectionInfo)
+    {
+        CHECK(selectionInfo->GetSelectionInfo() == "Choose the next scene");
+        CHECK(selectionInfo->GetContactURL() == "https://cdn.example.com/content_xyz/main/selection");
+        CHECK(selectionInfo->GetSelections().size() == 2);
+        CHECK(selectionInfo->GetSelections().size() == 2 && selectionInfo->GetSelections().at(0)->GetParameter() == "red");
+        CHECK(selectionInfo->GetSelections().size() == 2 && selectionInfo->GetSelections().at(0)->GetDataEncoding() == "base64");
+        CHECK(selectionInfo->GetSelections().size() == 2 && selectionInfo->GetSelections().at(1)->GetData() == "Blue door");
+        CHECK(selectionInfo->GetSelections().size() == 2 && selectionInfo->GetSelections().at(1)->GetDataEncoding().empty());
+    }
+
+    delete mpd;
+    return 0;
+}
 static void TestSmoke (IDASHManager *manager, int count, char **paths)
 {
     for (int i = 0; i < count; i++)
@@ -353,9 +449,9 @@ static void TestSmoke (IDASHManager *manager, int count, char **paths)
 
 int main (int argc, char **argv)
 {
-    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "smoke")))
+    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "altmpd") && strcmp(argv[1], "smoke")))
     {
-        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | smoke <file.mpd>...\n", argv[0]);
+        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | altmpd <alternative_mpd.mpd> | smoke <file.mpd>...\n", argv[0]);
         return 2;
     }
 
@@ -371,6 +467,8 @@ int main (int argc, char **argv)
         TestSteering(manager, argv[2]);
     else if (!strcmp(argv[1], "cmcd"))
         TestCMCD(manager, argv[2]);
+    else if (!strcmp(argv[1], "altmpd"))
+        TestAlternativeMPD(manager, argv[2]);
     else
         TestSmoke(manager, argc - 2, argv + 2);
 

@@ -11,6 +11,8 @@ add_test(NAME mpd_content_steering
          COMMAND libdash_mpd_test steering ${CMAKE_CURRENT_SOURCE_DIR}/data/content_steering.mpd)
 add_test(NAME mpd_cmcd
          COMMAND libdash_mpd_test cmcd ${CMAKE_CURRENT_SOURCE_DIR}/data/cmcd.mpd)
+add_test(NAME mpd_alternative_mpd
+         COMMAND libdash_mpd_test altmpd ${CMAKE_CURRENT_SOURCE_DIR}/data/alternative_mpd.mpd)
 
 if(LIBDASH_SCHEMA_EXAMPLES_DIR)
     file(GLOB schema_examples ${LIBDASH_SCHEMA_EXAMPLES_DIR}/*.mpd)

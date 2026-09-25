@@ -32,6 +32,8 @@ ServiceDescription::~ServiceDescription   ()
         delete(this->contentSteerings.at(i));
     for (size_t i=0; i < this->clientDataReportings.size(); i++)
         delete(this->clientDataReportings.at(i));
+    for (size_t i=0; i < this->playbackRestrictions.size(); i++)
+        delete(this->playbackRestrictions.at(i));
 }
 
 const std::vector<IDescriptor *>&          ServiceDescription::GetScope               ()  const
@@ -99,4 +101,13 @@ void                                       ServiceDescription::AddClientDataRepo
 {
     if (clientDataReporting != NULL)
         this->clientDataReportings.push_back(clientDataReporting);
+}
+const std::vector<IPlaybackRestrictions *>& ServiceDescription::GetPlaybackRestrictions    ()  const
+{
+    return this->playbackRestrictions;
+}
+void                                        ServiceDescription::AddPlaybackRestrictions    (PlaybackRestrictions* playbackRestrictions)
+{
+    if (playbackRestrictions != NULL)
+        this->playbackRestrictions.push_back(playbackRestrictions);
 }

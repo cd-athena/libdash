@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- libdash_mpd_test: Alternative MPD events, Event content and children, PlaybackRestrictions
+     (ISO/IEC 23009-1, 6th edition, 5.10.2, 5.16, Annex K.3.8, K.6, L.3.4) -->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011"
+     type="static" minBufferTime="PT2S" mediaPresentationDuration="PT600S">
+  <ServiceDescription id="1250">
+    <PlaybackRestrictions skipAfter="PT15S"/>
+    <PlaybackRestrictions/>
+  </ServiceDescription>
+  <Period id="main">
+    <EventStream schemeIdUri="urn:mpeg:dash:event:alternativeMPD:insert:2025" timescale="1000">
+      <Event presentationTime="10000" duration="5000" id="1">
+        <InsertPresentation uri="https://ads.example.com/ad1.mpd" earliestResolutionTimeOffset="30000"
+                            serviceDescriptionId="1250" maxDuration="30000" executeOnce="true" noJump="2" skipAfter="PT5S">
+          <SupplementalProperty schemeIdUri="urn:example:ad" value="midroll"/>
+        </InsertPresentation>
+        <SupplementalProperty schemeIdUri="urn:example:event" value="insert"/>
+      </Event>
+    </EventStream>
+    <EventStream schemeIdUri="urn:mpeg:dash:event:alternativeMPD:replace:2025" timescale="1000">
+      <Event presentationTime="60000" duration="10000" id="2" status="update">
+        <ReplacePresentation uri="https://ads.example.com/ad2.mpd" returnOffset="20000" maxDuration="15000" clip="false"/>
+        <EssentialProperty schemeIdUri="urn:example:essential" value="1"/>
+      </Event>
+      <Event presentationTime="120000" id="3">
+        <ReplacePresentation uri="https://ads.example.com/ad3.mpd" startWithOffset="true"/>
+      </Event>
+    </EventStream>
+    <EventStream schemeIdUri="urn:mpeg:dash:event:service-description:2024" timescale="1000">
+      <Event presentationTime="0" duration="60000" id="4294967297">1250</Event>
+      <Event presentationTime="60000" duration="60000" id="5">
+        <ServiceDescription id="2000">
+          <PlaybackRestrictions skipAfter="PT30S"/>
+        </ServiceDescription>
+      </Event>
+    </EventStream>
+    <EventStream schemeIdUri="urn:mpeg:dash:nonlinearplayback:2020" timescale="1">
+      <Event presentationTime="100" duration="20" id="6">
+        <SelectionInfo selectionInfo="Choose the next scene" contactURL="https://cdn.example.com/content_xyz/main/selection">
+          <Selection parameter="red" data="UmVk" dataEncoding="base64"/>
+          <Selection parameter="blue" data="Blue door"/>
+        </SelectionInfo>
+      </Event>
+    </EventStream>
+    <AdaptationSet id="1" contentType="video">
+      <SegmentTemplate media="v_$Number$.m4s" duration="2" startNumber="1"/>
+      <Representation id="v1" bandwidth="1000000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>
