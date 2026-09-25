@@ -7,14 +7,14 @@ libdash is a library that provides an object orient (OO) interface to the MPEG-D
 
 - Cross platform build system based on cmake that includes Windows, Linux and Mac.
 - Open source available and licensed under the LGPL.
-- Implements the full MPEG-DASH standard according to ISO/IEC 23009-1, Information Technology Dynamic Adaptive Streaming over HTTP (DASH) Part 1: Media Presentation Description and Segment Formats
+- Parses Media Presentation Descriptions according to ISO/IEC 23009-1, Information Technology Dynamic Adaptive Streaming over HTTP (DASH) Part 1: Media Presentation Description and Segment Formats, 6th edition. All elements and attributes of the 6th-edition MPD schema are available through the dash::mpd interfaces.
 - Handles the download and xml parsing of the MPD. Based on that it provides an OO based interface to the MPD.
 - Media elements, e.g., SegmentURL, SegmentTemplate, etc., are downloadable in that OO based structure and can be downloaded through libdash, which internally uses libcurl.
 - Therefore basically all protocols that libcurl supports, e.g., HTTP, FTP, etc. are supported by libdash.
 - However it also provides a configurable download interface, which enables the use of external connections that can be implemented by the user of the library for the download of media segments.
 - The use of such external connections will be shown in the libdash_networkpart_test project which is part of libdash solution and also part of the cross platform cmake system and therefore usable on Windows, Linux and Mac.
 - The project contains a sample multimedia player that is based on ffmpeg which uses libdash for the playback of one of our dataset MPDs.
-- The development is based on Windows, therefore the code contains a VS10 solution with additional tests and the sample multimedia player.
+- The VS10 solution in the repository is outdated; on Windows, generate a Visual Studio solution with cmake instead.
 
 ## Architecture
 <p align="justify">The general architecture of MPEG-DASH is depicted in the figure below where the orange parts are standardized, i.e., the MPD and segment formats. The delivery of the MPD, the control heuristics and the media player itself, are depicted in blue in the figure. These parts are not standardized and allow the differentiation of industry solutions due to the performance or different features that can be integrated at that level. libdash is also depicted in blue and encapsulates the MPD parsing and HTTP part, which will be handled by the library. Therefore the library provides interfaces for the DASH Streaming Control and the Media Player to access MPDs and downloadable media segments. The download order of such media segments will not be handled by the library this is left to the DASH Streaming Control, which is an own component in this architecture but it could also be included in the Media Player.
@@ -40,24 +40,9 @@ You can find the latest sources and binaries in our [download section] (http://w
 
 ## How to use
 
-### Windows
-1. Download the tarball or clone the repository from gitlab (git://github.com/bitmovin/libdash.git)
-2. Open the libdash.sln with Visual Studio 2010
-3. Build the solution
-4. After that all files will be provided in the bin folder
-5. You can test the library with the sampleplayer.exe. This application simply downloads the lowest representation of one of our dataset MPDs.
-
-### Ubuntu 12.04
-1. sudo apt-get install git-core build-essential cmake libxml2-dev libcurl4-openssl-dev
-2. git clone git://github.com/bitmovin/libdash.git
-3. cd libdash/libdash
-4. mkdir build
-5. cd build
-6. cmake ../
-7. make
-8. cd bin
-9. The library and a simple test of the network part of the library should be available now. You can test the network part of the library with
-10. ./libdash_networkpart_test
+### Windows, Linux and macOS
+Build with CMake 3.12 or newer: `cmake -S libdash/libdash -B build`, `cmake --build build`, and run the MPD parser tests with `ctest --test-dir build`.
+See README.md for the dependencies on each platform.
 
 ## License
 

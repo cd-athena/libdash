@@ -3,6 +3,23 @@
 
 libdash is the **official reference software of the ISO/IEC MPEG-DASH standard** and is an open-source library that provides an object orient (OO) interface to the MPEG-DASH standard, developed by [Bitmovin](http://www.bitmovin.com).
 
+## Supported MPEG-DASH edition
+
+libdash parses Media Presentation Descriptions (MPDs) according to **ISO/IEC 23009-1, 6th edition**. Every element and attribute of the 6th-edition MPD schema (`DASH-MPD.xsd`) is available through the `dash::mpd` interfaces. Features added in the 4th to 6th editions include:
+
+| Feature | Where to find it |
+|---|---|
+| Segment Sequences and duration patterns | `IRepresentationBase::GetSegmentSequenceProperties()`, `ISegmentTimeline::GetPatterns()`, `ITimeline` (`@n`, `@k`, `@p`, `@pE`, `@ssp`), `IMultipleSegmentBase` (`@k`, `@endSubNumber`, `@tolerance`) |
+| URL query and header parameters (Annex I.3) | `GetRequestParams()` on `IMPD`, `IPeriod`, `IAdaptationSet`, `IRepresentation`, `IEventStream` |
+| Content steering and service locations | `IMPD::GetContentSteering()`, `IServiceDescription::GetContentSteerings()`, `IMPD::GetLocationElements()`, `IPatchLocation::GetServiceLocation()` |
+| Client data reporting and CMCD | `IServiceDescription::GetClientDataReportings()`, `IClientDataReporting::GetCMCDParameters()` |
+| Alternative MPD events and service description events | `IEvent::GetInsertPresentation()`, `GetReplacePresentation()`, `GetServiceDescriptions()`, `GetSelectionInfo()`, `GetContent()` |
+| Playback restrictions | `IServiceDescription::GetPlaybackRestrictions()` |
+| Linked Periods and List MPDs | `IPeriod::GetImportedMPD()`, `IPeriod::GetMinBufferTime()` |
+| Empty Adaptation Sets, failover content | `IPeriod::GetEmptyAdaptationSets()`, `ISegmentBase::GetFailoverContent()` |
+
+libdash is an MPD parser and download library: behaviour that the specification defines for DASH clients (for example resolving Linked Periods, executing Alternative MPD events or sending CMCD data) is left to the application. MPD Patch documents are not parsed. Attributes and elements that libdash does not know are still available through `IMPDElement::GetRawAttributes()` and `GetAdditionalSubNodes()`.
+
 ## by bitmovin
 <a href="https://www.bitmovin.com"><img src="https://ox4zindgwb3p1qdp2lznn7zb-wpengine.netdna-ssl.com/wp-content/uploads/2016/01/bitmovin-standard-2017.png" width="400px"/></a>
 
@@ -36,11 +53,9 @@ You can find the latest sources and binaries on github.
 ## How to use
 
 ### Windows
-1. Download the tarball or clone the repository from github (git://github.com/bitmovin/libdash.git)
-2. Open the libdash.sln with Visual Studio 2010
-3. Build the solution
-4. After that all files will be provided in the bin folder
-5. You can test the library with the sampleplayer.exe. This application simply downloads the lowest representation of one of our dataset MPDs.
+Use CMake to generate a Visual Studio solution, e.g. `cmake -S libdash/libdash -B build -G "Visual Studio 17 2022"`, then build it in Visual Studio or with `cmake --build build --config Release`. On Windows, CMake looks for libxml2, libcurl, zlib and iconv in the prebuilt packages shipped in `libdash/libdash`.
+
+The Visual Studio 2010 solution `libdash/libdash.sln` is outdated: it does not contain the source files added since 2021 and does not build the current library. The Windows build has not been tested with the 6th-edition changes.
 
 ### Linux and macOS
 Requires CMake 3.12 or newer, a C++11 compiler, libxml2, libcurl and zlib.
@@ -54,6 +69,11 @@ Requires CMake 3.12 or newer, a C++11 compiler, libxml2, libcurl and zlib.
 5. The library and test programs are in `build/bin`. Run the MPD parser tests with `ctest --test-dir build`
 
 To also check that the parser handles the official example MPDs, clone [MPEGGroup/DASHSchema](https://github.com/MPEGGroup/DASHSchema) and add `-DLIBDASH_SCHEMA_EXAMPLES_DIR=<path to DASHSchema>` in step 3.
+
+### Tests
+`libdash_mpd_test` checks the parsed values of the test MPDs in `libdash/libdash_mpd_test/data`, one test per feature area (`ctest --test-dir build -N` lists them). All test MPDs validate against the 6th-edition XML schema. GitHub Actions builds and tests libdash on Ubuntu (GCC and Clang, including a build with AddressSanitizer and UndefinedBehaviorSanitizer) and macOS, and parses all example MPDs of the MPEGGroup/DASHSchema `6th-Ed` branch.
+
+`libdash_networkpart_test` downloads files from a test server that is no longer available; build it with `-DLIBDASH_BUILD_NETWORK_TEST=OFF` to skip it.
 
 #### QTSamplePlayer
 Prerequisite: libdash must be built as described in the previous section.
