@@ -21,6 +21,7 @@
 #include "IMPD.h"
 #include "ProgramInformation.h"
 #include "BaseUrl.h"
+#include "ExtendedUrlInfo.h"
 #include "ContentProtection.h"
 #include "Descriptor.h"
 #include "Period.h"
@@ -46,6 +47,7 @@ namespace dash
 
                 const std::vector<IProgramInformation *>&   GetProgramInformations          ()  const;
                 const std::vector<IBaseUrl *>&              GetBaseUrls                     ()  const;
+                const std::vector<IExtendedUrlInfo *>&  GetRequestParams            ()  const;
                 const std::vector<std::string>&             GetLocations                    ()  const;
                 const std::vector<IPatchLocation *>&        GetPatchLocations               ()  const;
                 const std::vector<IServiceDescription *>&   GetServiceDescriptions          ()  const;
@@ -82,6 +84,7 @@ namespace dash
 
                 void    AddProgramInformation           (ProgramInformation *programInformation);
                 void    AddBaseUrl                      (BaseUrl *url);
+                void    AddRequestParam             (ExtendedUrlInfo *requestParam);
                 void    AddLocation                     (const std::string& location);
                 void    AddPatchLocation                (PatchLocation *patchLocation);
                 void    AddServiceDescription           (ServiceDescription* serviceDescription);
@@ -114,6 +117,7 @@ namespace dash
             private:
                 std::vector<ProgramInformation *>   programInformations;
                 std::vector<BaseUrl *>              baseUrls;
+                std::vector<ExtendedUrlInfo *>      requestParams;
                 std::vector<std::string>            locations;
                 std::vector<PatchLocation *>        patchLocations;
                 std::vector<ServiceDescription *>   serviceDescriptions;

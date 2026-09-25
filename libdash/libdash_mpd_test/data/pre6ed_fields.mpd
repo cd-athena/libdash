@@ -6,6 +6,8 @@
     <EventStream schemeIdUri="urn:example:ev" xlink:href="http://example.com/ev.xml"
                  xlink:type="simple" xlink:show="embed" presentationTimeOffset="8589934592" timescale="1"/>
     <AdaptationSet id="1" contentType="video" maxHeight="1080" subsegmentStartsWithSAP="1">
+      <ContentProtection schemeIdUri="urn:mpeg:dash:mp4protection:2011" value="cenc" robustness="HW_SECURE"/>
+      <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
       <SegmentTemplate media="v_$Time$.m4s" timescale="90000" presentationTimeOffset="5000000000">
         <FailoverContent valid="true"><FCS t="100" d="200"/></FailoverContent>
         <SegmentTimeline>
@@ -13,7 +15,9 @@
           <S d="180000" r="2"/>
         </SegmentTimeline>
       </SegmentTemplate>
-      <Representation id="v1" bandwidth="1000000" width="1920" height="1080"/>
+      <Representation id="v1" bandwidth="1000000" width="1920" height="1080">
+        <SupplementalProperty schemeIdUri="urn:example:supplemental" value="x" id="sp1"/>
+      </Representation>
     </AdaptationSet>
     <AdaptationSet id="2" contentType="audio">
       <SegmentList duration="2"><FailoverContent><FCS t="0" d="10"/></FailoverContent>

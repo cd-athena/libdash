@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- libdash_mpd_test: URL query and header parameters (ISO/IEC 23009-1, 6th edition, Annex I.3, "urn:mpeg:dash:urlparam:2025") -->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xlink="http://www.w3.org/1999/xlink"
+     profiles="urn:mpeg:dash:profile:isoff-live:2011" type="static" minBufferTime="PT2S" mediaPresentationDuration="PT60S">
+  <BaseURL>https://cdn.example.com/</BaseURL>
+  <RequestParam queryTemplate="$querypart$" useMPDUrlQuery="true"/>
+  <RequestParam includeInRequests="segment mpd" queryString="token=abc&amp;sid=42" sameOriginOnly="1"/>
+  <Period id="p0">
+    <RequestParam headerParamSource="mpd" queryTemplate="$header:X-Session$" header="X-Session-Echo"/>
+    <EventStream schemeIdUri="urn:mpeg:dash:event:alternativeMPD:insert:2025" timescale="1">
+      <Event presentationTime="10" duration="30" id="1"/>
+      <BaseURL>https://ads.example.com/</BaseURL>
+      <RequestParam includeInRequests="altmpd" queryTemplate="prta=$urn:mpeg:dash:state:execution-delta#42$"/>
+      <EssentialProperty schemeIdUri="urn:example:essential" value="1"/>
+      <SupplementalProperty schemeIdUri="urn:example:supplemental" value="a"/>
+      <SupplementalProperty schemeIdUri="urn:example:supplemental" value="b"/>
+    </EventStream>
+    <AdaptationSet id="1" contentType="video">
+      <RequestParam xlink:href="https://example.com/param.xml" xlink:actuate="onLoad"/>
+      <SegmentTemplate media="v_$Number$.m4s" duration="2" startNumber="1"/>
+      <Representation id="v1" bandwidth="1000000">
+        <RequestParam queryString="rep=v1"/>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+  <EssentialProperty schemeIdUri="urn:mpeg:dash:urlparam:2025"/>
+</MPD>

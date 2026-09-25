@@ -45,6 +45,7 @@
 #include "config.h"
 
 #include "IBaseUrl.h"
+#include "IExtendedUrlInfo.h"
 #include "IExtendedBandwidth.h"
 #include "ISubRepresentation.h"
 #include "ISegmentBase.h"
@@ -67,6 +68,13 @@ namespace dash
                  *  @return     a reference to a vector of pointers to dash::mpd::IBaseUrl objects
                  */
                 virtual const std::vector<IBaseUrl *>&              GetBaseURLs                  ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IExtendedUrlInfo objects, which correspond to the <tt><b>RequestParam</b></tt> elements.
+                 *  They specify parameters to be passed in URLs of HTTP requests issued by the client (<em>ISO/IEC 23009-1, 6th edition</em>, Annex I.3).
+                 *  @return     a reference to a vector of pointers to dash::mpd::IExtendedUrlInfo objects
+                 */
+                virtual const std::vector<IExtendedUrlInfo *>&      GetRequestParams           ()  const = 0;
                 
                 /**
                  *  Returns a reference to a vector of pointers to dash::mpd::IExtendedBandwidth objects that specifies an extended bandwidth model with more detailed information on the characteristics of the Representation. \n

@@ -31,7 +31,7 @@ namespace dash
 {
     namespace mpd
     {
-        class IContentProtection : public virtual IDescriptor
+        class IContentProtection : public IDescriptor
         {
             public:
                 virtual ~IContentProtection(){}

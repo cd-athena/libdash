@@ -21,6 +21,7 @@
 #include "IAdaptationSet.h"
 #include "RepresentationBase.h"
 #include "BaseUrl.h"
+#include "ExtendedUrlInfo.h"
 #include "SegmentBase.h"
 #include "SegmentList.h"
 #include "SegmentTemplate.h"
@@ -43,6 +44,7 @@ namespace dash
                 const std::vector<IDescriptor *>&       GetViewpoint                    ()  const;
                 const std::vector<IContentComponent *>& GetContentComponent             ()  const;
                 const std::vector<IBaseUrl *>&          GetBaseURLs                     ()  const;
+                const std::vector<IExtendedUrlInfo *>&  GetRequestParams            ()  const;
                 ISegmentBase*                           GetSegmentBase                  ()  const;
                 ISegmentList*                           GetSegmentList                  ()  const;
                 ISegmentTemplate*                       GetSegmentTemplate              ()  const;
@@ -79,6 +81,7 @@ namespace dash
                 void    AddViewpoint                (Descriptor *viewpoint);
                 void    AddContentComponent         (ContentComponent *contentComponent);
                 void    AddBaseURL                  (BaseUrl *baseURL);
+                void    AddRequestParam             (ExtendedUrlInfo *requestParam);
                 void    SetSegmentBase              (SegmentBase *segmentBase);
                 void    SetSegmentList              (SegmentList *segmentList);
                 void    SetSegmentTemplate          (SegmentTemplate *segmentTemplate);
@@ -114,6 +117,7 @@ namespace dash
                 std::vector<Descriptor *>       viewpoint;
                 std::vector<ContentComponent *> contentComponent;
                 std::vector<BaseUrl *>          baseURLs;
+                std::vector<ExtendedUrlInfo *>      requestParams;
                 SegmentBase                     *segmentBase;
                 SegmentList                     *segmentList;
                 SegmentTemplate                 *segmentTemplate;

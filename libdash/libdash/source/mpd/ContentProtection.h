@@ -21,7 +21,7 @@ namespace dash
 {
     namespace mpd
     {
-        class ContentProtection : public IContentProtection, public Descriptor
+        class ContentProtection : public DescriptorBase<IContentProtection>
         {
             public:
                 ContentProtection           ();

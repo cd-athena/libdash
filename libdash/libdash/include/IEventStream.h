@@ -22,6 +22,9 @@
 
 #include "IMPDElement.h"
 #include "IEvent.h"
+#include "IBaseUrl.h"
+#include "IExtendedUrlInfo.h"
+#include "IDescriptor.h"
 
 namespace dash
 {
@@ -39,6 +42,34 @@ namespace dash
                  *  @return     a pointer to a vector of dash::mpd::Event objects
                  */
                 virtual const std::vector<IEvent *>&       GetEvents                 ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IBaseUrl objects that can be used for reference resolution and alternative URL selection
+                 *  of HTTP requests issued by the client as a result of dispatching an event in this Event Stream (<em>ISO/IEC 23009-1, 6th edition</em>).
+                 *  @return     a reference to a vector of pointers to dash::mpd::IBaseUrl objects
+                 */
+                virtual const std::vector<IBaseUrl *>&     GetBaseURLs               ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IExtendedUrlInfo objects, which correspond to the <tt><b>RequestParam</b></tt> elements.
+                 *  They specify parameters to be passed in URLs of HTTP requests issued by the client as a result of dispatching an event in this Event Stream
+                 *  (<em>ISO/IEC 23009-1, 6th edition</em>, Annex I.3).
+                 *  @return     a reference to a vector of pointers to dash::mpd::IExtendedUrlInfo objects
+                 */
+                virtual const std::vector<IExtendedUrlInfo *>& GetRequestParams      ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IDescriptor objects that specify essential properties of this Event Stream.
+                 *  @return     a reference to a vector of pointers to dash::mpd::IDescriptor objects
+                 */
+                virtual const std::vector<IDescriptor *>&  GetEssentialProperties    ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IDescriptor objects that specify externally defined optional properties
+                 *  of one or more event instances in this Event Stream.
+                 *  @return     a reference to a vector of pointers to dash::mpd::IDescriptor objects
+                 */
+                virtual const std::vector<IDescriptor *>&  GetSupplementalProperties ()  const = 0;
                 
                 /**
                  *  Returns a reference to a string that specifies a reference to an external <tt><b>EventStream</b></tt> element.

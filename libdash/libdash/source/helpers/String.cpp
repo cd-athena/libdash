@@ -42,7 +42,7 @@ void    String::Split   (const std::string &s, char delim, std::vector<uint32_t>
 }
 bool    String::ToBool  (const std::string &s)
 {
-    if (s == "true" || s == "True" || s == "TRUE")
+    if (s == "true" || s == "True" || s == "TRUE" || s == "1")
     {
         return true;
     }

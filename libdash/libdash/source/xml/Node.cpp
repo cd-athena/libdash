@@ -438,6 +438,64 @@ dash::mpd::SegmentSequenceProperties*       Node::ToSegmentSequenceProperties   
     segmentSequenceProperties->AddRawAttributes(this->attributes);
     return segmentSequenceProperties;
 }
+dash::mpd::ExtendedUrlInfo*                 Node::ToExtendedUrlInfo     ()  const
+{
+    dash::mpd::ExtendedUrlInfo* extendedUrlInfo = new dash::mpd::ExtendedUrlInfo();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("queryTemplate"))
+    {
+        extendedUrlInfo->SetQueryTemplate(this->GetAttributeValue("queryTemplate"));
+    }
+    if (this->HasAttribute("useMPDUrlQuery"))
+    {
+        extendedUrlInfo->SetUseMPDUrlQuery(dash::helpers::String::ToBool(this->GetAttributeValue("useMPDUrlQuery")));
+    }
+    if (this->HasAttribute("queryString"))
+    {
+        extendedUrlInfo->SetQueryString(this->GetAttributeValue("queryString"));
+    }
+    if (this->HasAttribute("xlink:href"))
+    {
+        extendedUrlInfo->SetXlinkHref(this->GetAttributeValue("xlink:href"));
+    }
+    if (this->HasAttribute("xlink:actuate"))
+    {
+        extendedUrlInfo->SetXlinkActuate(this->GetAttributeValue("xlink:actuate"));
+    }
+    if (this->HasAttribute("xlink:type"))
+    {
+        extendedUrlInfo->SetXlinkType(this->GetAttributeValue("xlink:type"));
+    }
+    if (this->HasAttribute("xlink:show"))
+    {
+        extendedUrlInfo->SetXlinkShow(this->GetAttributeValue("xlink:show"));
+    }
+    if (this->HasAttribute("includeInRequests"))
+    {
+        extendedUrlInfo->SetIncludeInRequests(this->GetAttributeValue("includeInRequests"));
+    }
+    if (this->HasAttribute("headerParamSource"))
+    {
+        extendedUrlInfo->SetHeaderParamSource(this->GetAttributeValue("headerParamSource"));
+    }
+    if (this->HasAttribute("sameOriginOnly"))
+    {
+        extendedUrlInfo->SetSameOriginOnly(dash::helpers::String::ToBool(this->GetAttributeValue("sameOriginOnly")));
+    }
+    if (this->HasAttribute("header"))
+    {
+        extendedUrlInfo->SetHeader(this->GetAttributeValue("header"));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        extendedUrlInfo->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    extendedUrlInfo->AddRawAttributes(this->attributes);
+    return extendedUrlInfo;
+}
 dash::mpd::SegmentURL*                      Node::ToSegmentURL          ()  const
 {
     dash::mpd::SegmentURL *segmentUrl = new dash::mpd::SegmentURL();
@@ -662,6 +720,11 @@ dash::mpd::Representation*                  Node::ToRepresentation      ()  cons
             representation->AddBaseURL(subNodes.at(i)->ToBaseUrl());
             continue;
         }
+        if (subNodes.at(i)->GetName() == "RequestParam")
+        {
+            representation->AddRequestParam(subNodes.at(i)->ToExtendedUrlInfo());
+            continue;
+        }
         if (subNodes.at(i)->GetName() == "ExtendedBandwidth")
         {
             representation->AddExtendedBandwidth(subNodes.at(i)->ToExtendedBandwidth());
@@ -826,6 +889,11 @@ dash::mpd::AdaptationSet*                   Node::ToAdaptationSet       ()  cons
             adaptationSet->AddBaseURL(subNodes.at(i)->ToBaseUrl());
             continue;
         }
+        if (subNodes.at(i)->GetName() == "RequestParam")
+        {
+            adaptationSet->AddRequestParam(subNodes.at(i)->ToExtendedUrlInfo());
+            continue;
+        }
         if (subNodes.at(i)->GetName() == "SegmentBase")
         {
             adaptationSet->SetSegmentBase(subNodes.at(i)->ToSegmentBase());
@@ -940,6 +1008,26 @@ dash::mpd::EventStream*                    Node::ToEventStream           ()  con
         if (subNodes.at(i)->GetName() == "Event")
         {
             eventStream->AddEvent(subNodes.at(i)->ToEvent());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "BaseURL")
+        {
+            eventStream->AddBaseURL(subNodes.at(i)->ToBaseUrl());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "RequestParam")
+        {
+            eventStream->AddRequestParam(subNodes.at(i)->ToExtendedUrlInfo());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "EssentialProperty")
+        {
+            eventStream->AddEssentialProperty(subNodes.at(i)->ToDescriptor());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "SupplementalProperty")
+        {
+            eventStream->AddSupplementalProperty(subNodes.at(i)->ToDescriptor());
             continue;
         }
         eventStream->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
@@ -1229,6 +1317,11 @@ dash::mpd::Period*                          Node::ToPeriod              ()  cons
         if (subNodes.at(i)->GetName() == "BaseURL")
         {
             period->AddBaseURL(subNodes.at(i)->ToBaseUrl());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "RequestParam")
+        {
+            period->AddRequestParam(subNodes.at(i)->ToExtendedUrlInfo());
             continue;
         }
         if (subNodes.at(i)->GetName() == "AdaptationSet")
@@ -1723,6 +1816,11 @@ dash::mpd::MPD*                             Node::ToMPD                 ()  cons
             mpd->AddBaseUrl(subNodes.at(i)->ToBaseUrl());
             continue;
         }
+        if (subNodes.at(i)->GetName() == "RequestParam")
+        {
+            mpd->AddRequestParam(subNodes.at(i)->ToExtendedUrlInfo());
+            continue;
+        }
         if (subNodes.at(i)->GetName() == "Location")
         {
             mpd->AddLocation(subNodes.at(i)->GetText());
@@ -2043,7 +2141,8 @@ void                                        Node::SetCommonValuesForRep (dash::m
         }
     }
 }
-void                                        Node::SetCommonValuesForDesc(dash::mpd::Descriptor& object) const
+template <class DescriptorType>
+void                                        Node::SetCommonValuesForDesc(DescriptorType& object) const
 {
     std::vector<Node *> subNodes = this->GetSubNodes();
 

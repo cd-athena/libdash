@@ -60,6 +60,7 @@
 #include "../mpd/SegmentSequenceProperties.h"
 #include "../mpd/Pattern.h"
 #include "../mpd/RunLength.h"
+#include "../mpd/ExtendedUrlInfo.h"
 #include "../mpd/SegmentURL.h"
 #include "../mpd/ServiceDescription.h"
 #include "../mpd/SubRepresentation.h"
@@ -102,7 +103,8 @@ namespace dash
                 void                                        SetMPDPath          (std::string path);
 
             private:
-                void                                        SetCommonValuesForDesc  (dash::mpd::Descriptor& object) const;
+                template <class DescriptorType>
+                void                                        SetCommonValuesForDesc  (DescriptorType& object) const;
                 void                                        SetCommonValuesForRep   (dash::mpd::RepresentationBase& object) const;
                 void                                        SetCommonValuesForSeg   (dash::mpd::SegmentBase& object) const;
                 void                                        SetCommonValuesForMSeg  (dash::mpd::MultipleSegmentBase& object) const;
@@ -145,6 +147,7 @@ namespace dash
                 dash::mpd::Pattern*                         ToPattern               ()  const;
                 dash::mpd::RunLength*                       ToRunLength             ()  const;
                 dash::mpd::SegmentSequenceProperties*       ToSegmentSequenceProperties ()  const;
+                dash::mpd::ExtendedUrlInfo*                 ToExtendedUrlInfo       ()  const;
                 dash::mpd::SegmentURL*                      ToSegmentURL            ()  const;
                 dash::mpd::SubRepresentation*               ToSubRepresentation     ()  const;
                 dash::mpd::Subset*                          ToSubset                ()  const;

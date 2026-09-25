@@ -17,6 +17,9 @@
 #include "IEventStream.h"
 #include "AbstractMPDElement.h"
 #include "Event.h"
+#include "BaseUrl.h"
+#include "ExtendedUrlInfo.h"
+#include "Descriptor.h"
 
 namespace dash
 {
@@ -29,6 +32,10 @@ namespace dash
                 virtual ~EventStream    ();
 
                 const std::vector<IEvent *>& GetEvents                 ()  const;
+                const std::vector<IBaseUrl *>&          GetBaseURLs             ()  const;
+                const std::vector<IExtendedUrlInfo *>&  GetRequestParams        ()  const;
+                const std::vector<IDescriptor *>&       GetEssentialProperties  ()  const;
+                const std::vector<IDescriptor *>&       GetSupplementalProperties   ()  const;
                 const std::string&           GetXlinkHref              ()  const;
                 const std::string&           GetXlinkActuate           ()  const;
                 const std::string&           GetXlinkType              ()  const;
@@ -39,6 +46,10 @@ namespace dash
                 uint64_t                     GetPresentationTimeOffset ()  const;
 
                 void    AddEvent                    (Event *event);
+                void    AddBaseURL                  (BaseUrl *baseURL);
+                void    AddRequestParam             (ExtendedUrlInfo *requestParam);
+                void    AddEssentialProperty        (Descriptor *essentialProperty);
+                void    AddSupplementalProperty     (Descriptor *supplementalProperty);
                 void    SetXlinkHref                (const std::string& xlinkHref);
                 void    SetXlinkActuate             (const std::string& xlinkActuate);
                 void    SetXlinkType                (const std::string& xlinkType);
@@ -50,6 +61,10 @@ namespace dash
 
             protected:
                 std::vector<Event *>  events;
+                std::vector<BaseUrl *>          baseURLs;
+                std::vector<ExtendedUrlInfo *>  requestParams;
+                std::vector<Descriptor *>       essentialProperties;
+                std::vector<Descriptor *>       supplementalProperties;
                 std::string           xlinkHref;
                 std::string           xlinkActuate;
                 std::string           xlinkType;

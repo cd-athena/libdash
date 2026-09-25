@@ -60,6 +60,8 @@ AdaptationSet::~AdaptationSet   ()
         delete(this->contentComponent.at(i));
     for(size_t i = 0; i < this->baseURLs.size(); i++)
         delete(this->baseURLs.at(i));
+    for(size_t i = 0; i < this->requestParams.size(); i++)
+        delete(this->requestParams.at(i));
     for(size_t i = 0; i < this->representation.size(); i++)
         delete(this->representation.at(i));
 
@@ -115,6 +117,15 @@ const std::vector<IBaseUrl *>&          AdaptationSet::GetBaseURLs              
 void                                    AdaptationSet::AddBaseURL                       (BaseUrl *baseUrl)
 {
     this->baseURLs.push_back(baseUrl);
+}
+const std::vector<IExtendedUrlInfo *>&     AdaptationSet::GetRequestParams       ()  const
+{
+    return (std::vector<IExtendedUrlInfo *> &) this->requestParams;
+}
+void                                        AdaptationSet::AddRequestParam        (ExtendedUrlInfo *requestParam)
+{
+    if(requestParam != NULL)
+        this->requestParams.push_back(requestParam);
 }
 ISegmentBase*                           AdaptationSet::GetSegmentBase                   ()  const
 {

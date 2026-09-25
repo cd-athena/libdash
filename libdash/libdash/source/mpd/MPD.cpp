@@ -53,6 +53,8 @@ MPD::~MPD   ()
         delete(this->periods.at(i));
     for(size_t i = 0; i < this->baseUrls.size(); i++)
         delete(this->baseUrls.at(i));
+    for(size_t i = 0; i < this->requestParams.size(); i++)
+        delete(this->requestParams.at(i));
     for(size_t i = 0; i < this->serviceDescriptions.size(); i++)
         delete(this->serviceDescriptions.at(i));
     for(size_t i = 0; i < this->initializationSets.size(); i++)
@@ -82,6 +84,15 @@ const std::vector<IBaseUrl*>&               MPD::GetBaseUrls                    
 void                                        MPD::AddBaseUrl                         (BaseUrl *url)
 {
     this->baseUrls.push_back(url);
+}
+const std::vector<IExtendedUrlInfo *>&     MPD::GetRequestParams       ()  const
+{
+    return (std::vector<IExtendedUrlInfo *> &) this->requestParams;
+}
+void                                        MPD::AddRequestParam        (ExtendedUrlInfo *requestParam)
+{
+    if(requestParam != NULL)
+        this->requestParams.push_back(requestParam);
 }
 const std::vector<std::string>&             MPD::GetLocations                       () const
 {

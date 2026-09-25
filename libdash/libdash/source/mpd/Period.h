@@ -20,6 +20,7 @@
 
 #include "IPeriod.h"
 #include "BaseUrl.h"
+#include "ExtendedUrlInfo.h"
 #include "AdaptationSet.h"
 #include "Subset.h"
 #include "SegmentBase.h"
@@ -44,6 +45,7 @@ namespace dash
                 virtual ~Period ();
 
                 const std::vector<IBaseUrl *>&            GetBaseURLs               ()  const;
+                const std::vector<IExtendedUrlInfo *>&  GetRequestParams            ()  const;
                 ISegmentBase*                             GetSegmentBase            ()  const;
                 ISegmentList*                             GetSegmentList            ()  const;
                 ISegmentTemplate*                         GetSegmentTemplate        ()  const;
@@ -67,6 +69,7 @@ namespace dash
                 bool                                      GetBitstreamSwitching     ()  const;
 
                 void    AddBaseURL                  (BaseUrl *baseURL);
+                void    AddRequestParam             (ExtendedUrlInfo *requestParam);
                 void    SetSegmentBase              (SegmentBase *segmentBase);
                 void    SetSegmentList              (SegmentList *segmentList);
                 void    SetSegmentTemplate          (SegmentTemplate *segmentTemplate);
@@ -91,6 +94,7 @@ namespace dash
 
             private:
                 std::vector<BaseUrl *>              baseURLs;
+                std::vector<ExtendedUrlInfo *>      requestParams;
                 SegmentBase                         *segmentBase;
                 SegmentList                         *segmentList;
                 SegmentTemplate                     *segmentTemplate;

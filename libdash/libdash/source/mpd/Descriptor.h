@@ -25,24 +25,38 @@ namespace dash
 {
     namespace mpd
     {
-        class Descriptor : public virtual IDescriptor, public AbstractMPDElement
+        /*
+         * Implementation of the DescriptorType attributes, shared by Descriptor and ContentProtection.
+         * DescriptorInterface (IDescriptor or an interface derived from it) is the first, non-virtual base,
+         * because the getters of the containing elements return std::vector<Descriptor *> reinterpreted as
+         * std::vector<IDescriptor *>, which requires the interface subobject at offset 0.
+         */
+        template <class DescriptorInterface>
+        class DescriptorBase : public DescriptorInterface, public AbstractMPDElement
         {
             public:
-                Descriptor          ();
-                virtual ~Descriptor ();
+                DescriptorBase          () : schemeIdUri(""), value(""), id("") {}
+                virtual ~DescriptorBase () {}
 
-                const std::string&      GetSchemeIdUri  () const;
-                const std::string&      GetValue        () const;
-                const std::string&      GetId           () const;
+                const std::string&      GetSchemeIdUri  () const    { return this->schemeIdUri; }
+                const std::string&      GetValue        () const    { return this->value; }
+                const std::string&      GetId           () const    { return this->id; }
 
-                void    SetValue        (const std::string& value);
-                void    SetSchemeIdUri  (const std::string& schemeIdUri);
-                void    SetId           (const std::string& id);
+                void    SetValue        (const std::string& value)          { this->value = value; }
+                void    SetSchemeIdUri  (const std::string& schemeIdUri)    { this->schemeIdUri = schemeIdUri; }
+                void    SetId           (const std::string& id)             { this->id = id; }
 
             protected:
                 std::string  schemeIdUri;
                 std::string  value;
                 std::string  id;
+        };
+
+        class Descriptor : public DescriptorBase<IDescriptor>
+        {
+            public:
+                Descriptor          ();
+                virtual ~Descriptor ();
         };
     }
 }

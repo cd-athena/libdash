@@ -36,6 +36,8 @@ Period::~Period ()
 {
     for(size_t i = 0; i < this->baseURLs.size(); i++)
         delete(this->baseURLs.at(i));
+    for(size_t i = 0; i < this->requestParams.size(); i++)
+        delete(this->requestParams.at(i));
     for(size_t i = 0; i < this->adaptationSets.size(); i++)
         delete(this->adaptationSets.at(i));
     for(size_t i = 0; i < this->emptyAdaptationSets.size(); i++)
@@ -67,6 +69,15 @@ const std::vector<IBaseUrl *>&              Period::GetBaseURLs                 
 void                                        Period::AddBaseURL                   (BaseUrl *baseUrl)
 {
     this->baseURLs.push_back(baseUrl);
+}
+const std::vector<IExtendedUrlInfo *>&     Period::GetRequestParams       ()  const
+{
+    return (std::vector<IExtendedUrlInfo *> &) this->requestParams;
+}
+void                                        Period::AddRequestParam        (ExtendedUrlInfo *requestParam)
+{
+    if(requestParam != NULL)
+        this->requestParams.push_back(requestParam);
 }
 ISegmentBase*                               Period::GetSegmentBase               ()  const
 {
