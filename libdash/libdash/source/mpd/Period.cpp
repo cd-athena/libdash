@@ -29,11 +29,14 @@ Period::Period  () :
         id(""),
         start(""),
         duration(""),
-        isBitstreamSwitching(false)
+        isBitstreamSwitching(false),
+        importedMPD(NULL),
+        minBufferTime("")
 {
 }
 Period::~Period ()
 {
+    delete(this->importedMPD);
     for(size_t i = 0; i < this->baseURLs.size(); i++)
         delete(this->baseURLs.at(i));
     for(size_t i = 0; i < this->requestParams.size(); i++)
@@ -248,4 +251,21 @@ bool                                        Period::GetBitstreamSwitching       
 void                                        Period::SetBitstreamSwitching        (bool value)
 {
     this->isBitstreamSwitching = value;
+}
+const IImportedMPD *                        Period::GetImportedMPD               ()  const
+{
+    return this->importedMPD;
+}
+void                                        Period::SetImportedMPD               (ImportedMPD *importedMPD)
+{
+    delete(this->importedMPD);
+    this->importedMPD = importedMPD;
+}
+const std::string&                          Period::GetMinBufferTime             ()  const
+{
+    return this->minBufferTime;
+}
+void                                        Period::SetMinBufferTime             (const std::string& minBufferTime)
+{
+    this->minBufferTime = minBufferTime;
 }

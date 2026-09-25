@@ -52,6 +52,7 @@
 #include "IMPDElement.h"
 #include "IBaseUrl.h"
 #include "IExtendedUrlInfo.h"
+#include "IImportedMPD.h"
 #include "ISegmentBase.h"
 #include "ISegmentList.h"
 #include "ISegmentTemplate.h"
@@ -248,6 +249,20 @@ namespace dash
                  *  @return     a bool value
                  */
                 virtual bool                                        GetBitstreamSwitching      ()  const = 0;
+
+                /**
+                 *  Returns a pointer to a dash::mpd::IImportedMPD object if this Period is a Linked Period (<em>ISO/IEC 23009-1, 6th edition</em>,
+                 *  subclause 5.3.2.6), or NULL if the <b>ImportedMPD</b> element is not present.
+                 *  @return     a pointer to a dash::mpd::IImportedMPD object
+                 */
+                virtual const IImportedMPD *                        GetImportedMPD             ()  const = 0;
+
+                /**
+                 *  Returns the \c \@minBufferTime of this Period as xs:duration, or an empty string if not present. If present, it overrides
+                 *  MPD@minBufferTime. It only appears in Periods constructed by XLink or Linked Period resolution (<em>ISO/IEC 23009-1, 6th edition</em>, Table 4).
+                 *  @return     a reference to a string
+                 */
+                virtual const std::string&                          GetMinBufferTime           ()  const = 0;
 
         };
     }

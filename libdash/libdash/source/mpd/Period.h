@@ -21,6 +21,7 @@
 #include "IPeriod.h"
 #include "BaseUrl.h"
 #include "ExtendedUrlInfo.h"
+#include "ImportedMPD.h"
 #include "AdaptationSet.h"
 #include "Subset.h"
 #include "SegmentBase.h"
@@ -67,6 +68,8 @@ namespace dash
                 const std::string&                        GetStart                  ()  const;
                 const std::string&                        GetDuration               ()  const;
                 bool                                      GetBitstreamSwitching     ()  const;
+                const IImportedMPD *                      GetImportedMPD            ()  const;
+                const std::string&                        GetMinBufferTime          ()  const;
 
                 void    AddBaseURL                  (BaseUrl *baseURL);
                 void    AddRequestParam             (ExtendedUrlInfo *requestParam);
@@ -91,6 +94,8 @@ namespace dash
                 void    SetStart                    (const std::string& start);
                 void    SetDuration                 (const std::string& duration);
                 void    SetBitstreamSwitching       (bool value);
+                void    SetImportedMPD              (ImportedMPD *importedMPD);
+                void    SetMinBufferTime            (const std::string& minBufferTime);
 
             private:
                 std::vector<BaseUrl *>              baseURLs;
@@ -116,6 +121,8 @@ namespace dash
                 std::string                         start;
                 std::string                         duration;
                 bool                                isBitstreamSwitching;
+                ImportedMPD                         *importedMPD;
+                std::string                         minBufferTime;
         };
     }
 }

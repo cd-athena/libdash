@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- libdash_mpd_test: Period constructed by Linked Period resolution, carrying Period@minBufferTime (ISO/IEC 23009-1, 6th edition, Table 4) -->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011" type="static"
+     minBufferTime="PT1S" mediaPresentationDuration="PT15S">
+  <Period id="42" duration="PT15S" minBufferTime="PT3S">
+    <AdaptationSet id="1" contentType="video">
+      <SegmentTemplate media="ad0_$Number$.m4s" duration="3" startNumber="1"/>
+      <Representation id="v1" bandwidth="2000000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>

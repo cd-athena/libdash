@@ -743,6 +743,20 @@ dash::mpd::AlternativeMPDReplaceEvent*      Node::ToAlternativeMPDReplaceEvent  
 
     return replaceEvent;
 }
+dash::mpd::ImportedMPD*                     Node::ToImportedMPD         ()  const
+{
+    dash::mpd::ImportedMPD* importedMPD = new dash::mpd::ImportedMPD();
+
+    importedMPD->SetUrl(this->GetText());
+
+    if (this->HasAttribute("earliestResolutionTimeOffset"))
+    {
+        importedMPD->SetEarliestResolutionTimeOffset(strtod(this->GetAttributeValue("earliestResolutionTimeOffset").c_str(), NULL));
+    }
+
+    importedMPD->AddRawAttributes(this->attributes);
+    return importedMPD;
+}
 dash::mpd::SegmentURL*                      Node::ToSegmentURL          ()  const
 {
     dash::mpd::SegmentURL *segmentUrl = new dash::mpd::SegmentURL();
@@ -1621,6 +1635,10 @@ dash::mpd::Period*                          Node::ToPeriod              ()  cons
     {
         period->SetBitstreamSwitching(dash::helpers::String::ToBool(this->GetAttributeValue("bitstreamSwitching")));
     }
+    if (this->HasAttribute("minBufferTime"))
+    {
+        period->SetMinBufferTime(this->GetAttributeValue("minBufferTime"));
+    }
 
     for(size_t i = 0; i < subNodes.size(); i++)
     {
@@ -1637,6 +1655,11 @@ dash::mpd::Period*                          Node::ToPeriod              ()  cons
         if (subNodes.at(i)->GetName() == "AdaptationSet")
         {
             period->AddAdaptationSet(subNodes.at(i)->ToAdaptationSet());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "ImportedMPD")
+        {
+            period->SetImportedMPD(subNodes.at(i)->ToImportedMPD());
             continue;
         }
         if (subNodes.at(i)->GetName() == "EmptyAdaptationSet")

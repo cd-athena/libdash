@@ -9,6 +9,8 @@
  *   libdash_mpd_test steering  <content_steering.mpd>     checks ContentSteering and @serviceLocation
  *   libdash_mpd_test cmcd      <cmcd.mpd>                 checks ClientDataReporting and CMCDParameters
  *   libdash_mpd_test altmpd    <alternative_mpd.mpd>      checks Alternative MPD events, Event content and PlaybackRestrictions
+ *   libdash_mpd_test imported  <list_mpd.mpd> <linked_period_resolved.mpd>
+ *                                                         checks List MPDs, Linked Periods (ImportedMPD) and Period@minBufferTime
  *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses
  *
  * This source code and its use and distribution, is subject to the terms
@@ -435,6 +437,48 @@ static int TestAlternativeMPD (IDASHManager *manager, char *path)
     delete mpd;
     return 0;
 }
+static int TestImported (IDASHManager *manager, char *listPath, char *resolvedPath)
+{
+    IMPD *mpd = manager->Open(listPath);
+    CHECK(mpd != NULL);
+    if (!mpd)
+        return 1;
+
+    CHECK(mpd->GetType() == "list");
+    const std::vector<IPeriod *> &periods = mpd->GetPeriods();
+    CHECK(periods.size() == 3);
+    if (periods.size() == 3)
+    {
+        const IImportedMPD *imported0 = periods.at(0)->GetImportedMPD();
+        CHECK(imported0 != NULL);
+        CHECK(imported0 && imported0->GetUrl() == "ad0.mpd");
+        CHECK(imported0 && imported0->GetEarliestResolutionTimeOffset() == 0.0);
+        CHECK(periods.at(0)->GetMinBufferTime().empty());
+        CHECK(periods.at(0)->GetEventStreams().size() == 1);
+        CHECK(periods.at(0)->GetEventStreams().size() == 1 &&
+              periods.at(0)->GetEventStreams().at(0)->GetEvents().at(0)->GetContent() == "http://example.com/beacon/ad0?time=0");
+        CHECK(periods.at(0)->GetServiceDescriptions().size() == 1 &&
+              periods.at(0)->GetServiceDescriptions().at(0)->GetPlaybackRestrictions().size() == 1);
+
+        const IImportedMPD *imported1 = periods.at(1)->GetImportedMPD();
+        CHECK(imported1 && imported1->GetEarliestResolutionTimeOffset() == 4.2);
+        const IImportedMPD *imported2 = periods.at(2)->GetImportedMPD();
+        CHECK(imported2 && imported2->GetUrl() == "ad2.mpd");
+        CHECK(imported2 && imported2->GetEarliestResolutionTimeOffset() == 60.0);
+        CHECK(periods.at(2)->GetAdditionalSubNodes().empty());
+    }
+    delete mpd;
+
+    IMPD *resolved = manager->Open(resolvedPath);
+    CHECK(resolved != NULL);
+    if (!resolved)
+        return 1;
+    CHECK(resolved->GetPeriods().at(0)->GetMinBufferTime() == "PT3S");
+    CHECK(resolved->GetPeriods().at(0)->GetImportedMPD() == NULL);
+    CHECK(resolved->GetMinBufferTime() == "PT1S");
+    delete resolved;
+    return 0;
+}
 static void TestSmoke (IDASHManager *manager, int count, char **paths)
 {
     for (int i = 0; i < count; i++)
@@ -449,9 +493,9 @@ static void TestSmoke (IDASHManager *manager, int count, char **paths)
 
 int main (int argc, char **argv)
 {
-    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "altmpd") && strcmp(argv[1], "smoke")))
+    if (argc < 3 || (!strcmp(argv[1], "imported") && argc < 4) || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "altmpd") && strcmp(argv[1], "imported") && strcmp(argv[1], "smoke")))
     {
-        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | altmpd <alternative_mpd.mpd> | smoke <file.mpd>...\n", argv[0]);
+        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | altmpd <alternative_mpd.mpd> | imported <list_mpd.mpd> <linked_period_resolved.mpd> | smoke <file.mpd>...\n", argv[0]);
         return 2;
     }
 
@@ -469,6 +513,8 @@ int main (int argc, char **argv)
         TestCMCD(manager, argv[2]);
     else if (!strcmp(argv[1], "altmpd"))
         TestAlternativeMPD(manager, argv[2]);
+    else if (!strcmp(argv[1], "imported"))
+        TestImported(manager, argv[2], argv[3]);
     else
         TestSmoke(manager, argc - 2, argv + 2);
 

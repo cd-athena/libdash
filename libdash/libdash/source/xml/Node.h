@@ -67,6 +67,7 @@
 #include "../mpd/PlaybackRestrictions.h"
 #include "../mpd/SelectionInfo.h"
 #include "../mpd/AlternativeMPDEvent.h"
+#include "../mpd/ImportedMPD.h"
 #include "../mpd/SegmentURL.h"
 #include "../mpd/ServiceDescription.h"
 #include "../mpd/SubRepresentation.h"
@@ -163,6 +164,7 @@ namespace dash
                 dash::mpd::Selection*                       ToSelection             ()  const;
                 dash::mpd::AlternativeMPDEvent*             ToAlternativeMPDEvent   ()  const;
                 dash::mpd::AlternativeMPDReplaceEvent*      ToAlternativeMPDReplaceEvent    ()  const;
+                dash::mpd::ImportedMPD*                     ToImportedMPD           ()  const;
                 template <class AlternativeMPDEventType>
                 void                                        SetCommonValuesForAltMPD    (AlternativeMPDEventType& object) const;
                 dash::mpd::SegmentURL*                      ToSegmentURL            ()  const;
