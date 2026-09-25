@@ -7,6 +7,8 @@ add_test(NAME mpd_segment_sequences
          COMMAND libdash_mpd_test sequences ${CMAKE_CURRENT_SOURCE_DIR}/data/segment_sequences.mpd)
 add_test(NAME mpd_url_parameters
          COMMAND libdash_mpd_test urlparams ${CMAKE_CURRENT_SOURCE_DIR}/data/url_parameters.mpd)
+add_test(NAME mpd_content_steering
+         COMMAND libdash_mpd_test steering ${CMAKE_CURRENT_SOURCE_DIR}/data/content_steering.mpd)
 
 if(LIBDASH_SCHEMA_EXAMPLES_DIR)
     file(GLOB schema_examples ${LIBDASH_SCHEMA_EXAMPLES_DIR}/*.mpd)

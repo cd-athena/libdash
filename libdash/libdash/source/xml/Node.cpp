@@ -496,6 +496,42 @@ dash::mpd::ExtendedUrlInfo*                 Node::ToExtendedUrlInfo     ()  cons
     extendedUrlInfo->AddRawAttributes(this->attributes);
     return extendedUrlInfo;
 }
+dash::mpd::ContentSteering*                 Node::ToContentSteering     ()  const
+{
+    dash::mpd::ContentSteering* contentSteering = new dash::mpd::ContentSteering();
+
+    contentSteering->SetUrl(this->GetText());
+
+    if (this->HasAttribute("defaultServiceLocation"))
+    {
+        contentSteering->SetDefaultServiceLocation(this->GetAttributeValue("defaultServiceLocation"));
+    }
+    if (this->HasAttribute("queryBeforeStart"))
+    {
+        contentSteering->SetQueryBeforeStart(dash::helpers::String::ToBool(this->GetAttributeValue("queryBeforeStart")));
+    }
+    if (this->HasAttribute("clientRequirement"))
+    {
+        contentSteering->SetClientRequirement(dash::helpers::String::ToBool(this->GetAttributeValue("clientRequirement")));
+    }
+
+    contentSteering->AddRawAttributes(this->attributes);
+    return contentSteering;
+}
+dash::mpd::Location*                        Node::ToLocation            ()  const
+{
+    dash::mpd::Location* location = new dash::mpd::Location();
+
+    location->SetUrl(this->GetText());
+
+    if (this->HasAttribute("serviceLocation"))
+    {
+        location->SetServiceLocation(this->GetAttributeValue("serviceLocation"));
+    }
+
+    location->AddRawAttributes(this->attributes);
+    return location;
+}
 dash::mpd::SegmentURL*                      Node::ToSegmentURL          ()  const
 {
     dash::mpd::SegmentURL *segmentUrl = new dash::mpd::SegmentURL();
@@ -1202,6 +1238,11 @@ dash::mpd::ServiceDescription*            Node::ToServiceDescription       ()  c
             serviceDescription->AddOperatingBandwidth(subNodes.at(i)->ToOperatingBandwidth());
             continue;
         }
+        if (subNodes.at(i)->GetName() == "ContentSteering")
+        {
+            serviceDescription->AddContentSteering(subNodes.at(i)->ToContentSteering());
+            continue;
+        }
         serviceDescription->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }    
 
@@ -1479,6 +1520,10 @@ dash::mpd::PatchLocation*                    Node::ToPatchLocation           () 
     if (this->HasAttribute("ttl"))
     {
         patchLocation->SetTtl(strtod(this->GetAttributeValue("ttl").c_str(), NULL));
+    }
+    if (this->HasAttribute("serviceLocation"))
+    {
+        patchLocation->SetServiceLocation(this->GetAttributeValue("serviceLocation"));
     }
 
     patchLocation->AddRawAttributes(this->attributes);
@@ -1824,6 +1869,7 @@ dash::mpd::MPD*                             Node::ToMPD                 ()  cons
         if (subNodes.at(i)->GetName() == "Location")
         {
             mpd->AddLocation(subNodes.at(i)->GetText());
+            mpd->AddLocationElement(subNodes.at(i)->ToLocation());
             continue;
         }
         if (subNodes.at(i)->GetName() == "PatchLocation")
@@ -1884,6 +1930,11 @@ dash::mpd::MPD*                             Node::ToMPD                 ()  cons
         if (subNodes.at(i)->GetName() == "LeapSecondInformation")
         {
             mpd->SetLeapSecondInformation(subNodes.at(i)->ToLeapSecondInformation());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "ContentSteering")
+        {
+            mpd->SetContentSteering(subNodes.at(i)->ToContentSteering());
             continue;
         }
         mpd->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));

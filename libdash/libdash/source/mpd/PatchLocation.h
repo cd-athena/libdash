@@ -29,13 +29,16 @@ namespace dash
                 
                 const std::string&   GetUrl    ()  const;
                 double               GetTtl    ()  const;
+                const std::string&   GetServiceLocation ()  const;
 
                 void    SetUrl    (const std::string& url);
                 void    SetTtl    (double ttl);
+                void    SetServiceLocation (const std::string& serviceLocation);
                 
             private:
                 std::string url;
                 double      ttl;
+                std::string serviceLocation;
                 
         };
     }

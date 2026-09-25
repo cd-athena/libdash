@@ -6,6 +6,7 @@
  *   libdash_mpd_test fields    <pre6ed_fields.mpd>        checks parsed values
  *   libdash_mpd_test sequences <segment_sequences.mpd>    checks segment sequences and duration patterns
  *   libdash_mpd_test urlparams <url_parameters.mpd>       checks RequestParam and EventStream children
+ *   libdash_mpd_test steering  <content_steering.mpd>     checks ContentSteering and @serviceLocation
  *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses
  *
  * This source code and its use and distribution, is subject to the terms
@@ -233,6 +234,57 @@ static int TestUrlParams (IDASHManager *manager, char *path)
     delete mpd;
     return 0;
 }
+static int TestSteering (IDASHManager *manager, char *path)
+{
+    IMPD *mpd = manager->Open(path);
+    CHECK(mpd != NULL);
+    if (!mpd)
+        return 1;
+
+    // MPD.ContentSteering
+    const IContentSteering *steering = mpd->GetContentSteering();
+    CHECK(steering != NULL);
+    if (steering)
+    {
+        CHECK(steering->GetUrl() == "https://steering.example.com/app/instance1234");
+        CHECK(steering->GetDefaultServiceLocation() == "beta");
+        CHECK(steering->GetDefaultServiceLocations().size() == 1 && steering->GetDefaultServiceLocations().at(0) == "beta");
+        CHECK(steering->IsQueryBeforeStart());
+        CHECK(steering->HasClientRequirement());
+    }
+
+    // ServiceDescription.ContentSteering
+    CHECK(mpd->GetServiceDescriptions().size() == 1);
+    const std::vector<IContentSteering *> &sdSteering = mpd->GetServiceDescriptions().at(0)->GetContentSteerings();
+    CHECK(sdSteering.size() == 2);
+    if (sdSteering.size() == 2)
+    {
+        CHECK(sdSteering.at(0)->GetUrl() == "https://steering.example.com/sd");
+        CHECK(!sdSteering.at(0)->HasClientRequirement());
+        CHECK(!sdSteering.at(0)->IsQueryBeforeStart());
+        CHECK(sdSteering.at(0)->GetDefaultServiceLocation().empty());
+        CHECK(sdSteering.at(0)->GetDefaultServiceLocations().empty());
+        CHECK(sdSteering.at(1)->GetDefaultServiceLocation() == "alpha");
+    }
+    CHECK(mpd->GetServiceDescriptions().at(0)->GetAdditionalSubNodes().empty());
+
+    // Location@serviceLocation, with GetLocations() unchanged
+    CHECK(mpd->GetLocations().size() == 2);
+    CHECK(mpd->GetLocations().size() == 2 && mpd->GetLocations().at(1) == "https://origin.example.com/live.mpd");
+    CHECK(mpd->GetLocationElements().size() == 2);
+    CHECK(mpd->GetLocationElements().size() == 2 && mpd->GetLocationElements().at(0)->GetUrl() == "https://cdn-a.example.com/live.mpd");
+    CHECK(mpd->GetLocationElements().size() == 2 && mpd->GetLocationElements().at(0)->GetServiceLocation() == "alpha");
+    CHECK(mpd->GetLocationElements().size() == 2 && mpd->GetLocationElements().at(1)->GetServiceLocation().empty());
+
+    // PatchLocation@serviceLocation and BaseURL@serviceLocation
+    CHECK(mpd->GetPatchLocations().size() == 1);
+    CHECK(mpd->GetPatchLocations().size() == 1 && mpd->GetPatchLocations().at(0)->GetServiceLocation() == "beta");
+    CHECK(mpd->GetPatchLocations().size() == 1 && mpd->GetPatchLocations().at(0)->GetTtl() == 60.0);
+    CHECK(mpd->GetBaseUrls().size() == 2 && mpd->GetBaseUrls().at(1)->GetServiceLocation() == "beta");
+
+    delete mpd;
+    return 0;
+}
 static void TestSmoke (IDASHManager *manager, int count, char **paths)
 {
     for (int i = 0; i < count; i++)
@@ -247,9 +299,9 @@ static void TestSmoke (IDASHManager *manager, int count, char **paths)
 
 int main (int argc, char **argv)
 {
-    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "smoke")))
+    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "smoke")))
     {
-        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | smoke <file.mpd>...\n", argv[0]);
+        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | smoke <file.mpd>...\n", argv[0]);
         return 2;
     }
 
@@ -261,6 +313,8 @@ int main (int argc, char **argv)
         TestSequences(manager, argv[2]);
     else if (!strcmp(argv[1], "urlparams"))
         TestUrlParams(manager, argv[2]);
+    else if (!strcmp(argv[1], "steering"))
+        TestSteering(manager, argv[2]);
     else
         TestSmoke(manager, argc - 2, argv + 2);
 

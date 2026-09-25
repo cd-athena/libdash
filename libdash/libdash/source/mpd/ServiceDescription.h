@@ -21,6 +21,7 @@
 #include "PlaybackRate.h"
 #include "OperatingQuality.h"
 #include "OperatingBandwidth.h"
+#include "ContentSteering.h"
 
 namespace dash
 {
@@ -37,6 +38,7 @@ namespace dash
                 const std::vector<IPlaybackRate *>&        GetPlaybackRate           ()  const;
                 const std::vector<IOperatingQuality *>&    GetOperatingQuality       ()  const;
                 const std::vector<IOperatingBandwidth *>&  GetOperatingBandwidth     ()  const;
+                const std::vector<IContentSteering *>&     GetContentSteerings       ()  const;
                 uint32_t                                   GetId                     ()  const;
 
                 void    AddScope                 (Descriptor* scope);
@@ -44,6 +46,7 @@ namespace dash
                 void    AddPlaybackRate          (PlaybackRate* playbackRate);
                 void    AddOperatingQuality      (OperatingQuality* operatingQuality);
                 void    AddOperatingBandwidth    (OperatingBandwidth* operatingBandwidth);
+                void    AddContentSteering       (ContentSteering* contentSteering);
                 void    SetId                    (uint32_t id);
 
             private:
@@ -52,6 +55,7 @@ namespace dash
                 std::vector<IPlaybackRate *>         playbackRate;
                 std::vector<IOperatingQuality *>     operatingQuality;
                 std::vector<IOperatingBandwidth *>   operatingBandwidth;
+                std::vector<IContentSteering *>      contentSteerings;
                 uint32_t                             id;
                 
         };

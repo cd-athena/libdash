@@ -42,6 +42,14 @@ namespace dash
                  *  @return     a double
                  */
                 virtual double               GetTtl            ()  const = 0;                
+
+                /**
+                 *  Returns the label of the Service Location this URL belongs to (<em>ISO/IEC 23009-1, 6th edition</em>, Table 54 and subclause 5.6.6).
+                 *  URLs sharing the same value are related. Empty if not present. \n\n
+                 *  Corresponds to the \c \@serviceLocation attribute.
+                 *  @return     a reference to a string
+                 */
+                virtual const std::string&   GetServiceLocation ()  const = 0;
         };
     }
 }

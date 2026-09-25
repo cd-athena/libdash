@@ -30,6 +30,8 @@
 #include "ServiceDescription.h"
 #include "LeapSecondInformation.h"
 #include "PatchLocation.h"
+#include "Location.h"
+#include "ContentSteering.h"
 #include "InitializationSet.h"
 #include "UIntVWithID.h"
 #include "../metrics/HTTPTransaction.h"
@@ -49,6 +51,7 @@ namespace dash
                 const std::vector<IBaseUrl *>&              GetBaseUrls                     ()  const;
                 const std::vector<IExtendedUrlInfo *>&  GetRequestParams            ()  const;
                 const std::vector<std::string>&             GetLocations                    ()  const;
+                const std::vector<ILocation *>&             GetLocationElements             ()  const;
                 const std::vector<IPatchLocation *>&        GetPatchLocations               ()  const;
                 const std::vector<IServiceDescription *>&   GetServiceDescriptions          ()  const;
                 const std::vector<IInitializationSet *>&    GetInitializationSets           ()  const;
@@ -61,6 +64,7 @@ namespace dash
                 const std::vector<IDescriptor *>&           GetSupplementalProperties       ()  const;
                 const std::vector<IDescriptor *>&           GetUTCTimings                   ()  const;
                 const ILeapSecondInformation *              GetLeapSecondInformation        ()  const;
+                const IContentSteering *                    GetContentSteering              ()  const;
                 const std::string&                          GetId                           ()  const;
                 const std::vector<std::string>&             GetProfiles                     ()  const;
                 const std::string&                          GetType                         ()  const;
@@ -86,6 +90,7 @@ namespace dash
                 void    AddBaseUrl                      (BaseUrl *url);
                 void    AddRequestParam             (ExtendedUrlInfo *requestParam);
                 void    AddLocation                     (const std::string& location);
+                void    AddLocationElement              (Location *location);
                 void    AddPatchLocation                (PatchLocation *patchLocation);
                 void    AddServiceDescription           (ServiceDescription* serviceDescription);
                 void    AddInitializationSet            (InitializationSet* initializationSet);
@@ -98,6 +103,7 @@ namespace dash
                 void    AddSupplementalProperty         (Descriptor *supplementalProperty);
                 void    AddUTCTiming                    (Descriptor *utcTiming);
                 void    SetLeapSecondInformation        (LeapSecondInformation *leapSecondInformation);
+                void    SetContentSteering              (ContentSteering *contentSteering);
                 void    SetId                           (const std::string& id);
                 void    SetProfiles                     (const std::string& profiles);
                 void    SetType                         (const std::string& type);
@@ -120,6 +126,7 @@ namespace dash
                 std::vector<ExtendedUrlInfo *>      requestParams;
                 std::vector<std::string>            locations;
                 std::vector<PatchLocation *>        patchLocations;
+                std::vector<Location *>             locationElements;
                 std::vector<ServiceDescription *>   serviceDescriptions;
                 std::vector<InitializationSet *>    initializationSets;
                 std::vector<UIntVWithID *>          initializationGroups;
@@ -131,6 +138,7 @@ namespace dash
                 std::vector<Descriptor *>           supplementalProperties;
                 std::vector<Descriptor *>           utcTimings;
                 LeapSecondInformation               *leapSecondInformation;
+                ContentSteering                     *contentSteering;
                 std::string                         id;
                 std::vector<std::string>            profiles;
                 std::string                         type;

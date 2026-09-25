@@ -25,6 +25,7 @@
 #include "IPlaybackRate.h"
 #include "IOperatingQuality.h"
 #include "IOperatingBandwidth.h"
+#include "IContentSteering.h"
 
 namespace dash
 {
@@ -76,6 +77,13 @@ namespace dash
                  *  @return     a reference to a vector of pointers to dash::mpd::IOperatingBandwidth objects
                  */
                 virtual const std::vector<IOperatingBandwidth *>&  GetOperatingBandwidth     ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IContentSteering objects that specify content steering operation
+                 *  for the service (<em>ISO/IEC 23009-1, 6th edition</em>, Annex K.4.2.6).
+                 *  @return     a reference to a vector of pointers to dash::mpd::IContentSteering objects
+                 */
+                virtual const std::vector<IContentSteering *>&     GetContentSteerings       ()  const = 0;
                 
                 /**
                  *  Returns an unsigned integer that specifies a unique identifier for this Service Description.

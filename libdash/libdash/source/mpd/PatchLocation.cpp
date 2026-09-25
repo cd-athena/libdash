@@ -15,7 +15,8 @@ using namespace dash::mpd;
 
 PatchLocation::PatchLocation    ()  :
     url(""),
-    ttl(0.0)
+    ttl(0.0),
+    serviceLocation("")
     
 {
 }
@@ -38,4 +39,12 @@ double              PatchLocation::GetTtl    ()  const
 void                PatchLocation::SetTtl    (double ttl) 
 {
     this->ttl = ttl;
+}
+const std::string&   PatchLocation::GetServiceLocation  ()  const
+{
+    return this->serviceLocation;
+}
+void                 PatchLocation::SetServiceLocation  (const std::string& serviceLocation)
+{
+    this->serviceLocation = serviceLocation;
 }

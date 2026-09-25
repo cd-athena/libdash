@@ -28,6 +28,8 @@ ServiceDescription::~ServiceDescription   ()
         delete(this->operatingQuality.at(i));
     for (size_t i=0; i < this->operatingBandwidth.size(); i++)
         delete(this->operatingBandwidth.at(i));
+    for (size_t i=0; i < this->contentSteerings.size(); i++)
+        delete(this->contentSteerings.at(i));
 }
 
 const std::vector<IDescriptor *>&          ServiceDescription::GetScope               ()  const
@@ -77,4 +79,13 @@ uint32_t                                   ServiceDescription::GetId            
 void                                       ServiceDescription::SetId                  (uint32_t id)
 {
     this->id = id;
+}
+const std::vector<IContentSteering *>&     ServiceDescription::GetContentSteerings    ()  const
+{
+    return this->contentSteerings;
+}
+void                                       ServiceDescription::AddContentSteering     (ContentSteering* contentSteering)
+{
+    if (contentSteering != NULL)
+        this->contentSteerings.push_back(contentSteering);
 }

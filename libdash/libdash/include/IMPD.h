@@ -51,6 +51,8 @@
 #include "IServiceDescription.h"
 #include "ILeapSecondInformation.h"
 #include "IPatchLocation.h"
+#include "ILocation.h"
+#include "IContentSteering.h"
 #include "IInitializationSet.h"
 #include "IUIntVWithID.h"
 
@@ -90,6 +92,13 @@ namespace dash
                  *  @return     a reference to a vector of strings
                  */
                 virtual const std::vector<std::string>&             GetLocations                    ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::ILocation objects, which correspond to the <b>Location</b> elements
+                 *  including their \c \@serviceLocation attribute (<em>ISO/IEC 23009-1, 6th edition</em>). GetLocations() returns the same URLs as strings.
+                 *  @return     a reference to a vector of pointers to dash::mpd::ILocation objects
+                 */
+                virtual const std::vector<ILocation *>&             GetLocationElements             ()  const = 0;
                 
                 /**
                  *  Returns a reference to a vector of pointers to dash::mpd::IPatchLocation objects that specify a location at which the MPD patch document is available. Details on the MPD patch document, this element, and expected processing models are available in subclause 5.15. of <em>ISO/IEC 23009-1</em>. \n
@@ -193,6 +202,13 @@ namespace dash
                  *  @return     a reference to a dash::mpd::ILeapSecondInformation object
                  */
                 virtual const ILeapSecondInformation *              GetLeapSecondInformation        ()  const = 0;
+
+                /**
+                 *  Returns a pointer to a dash::mpd::IContentSteering object that specifies the Content Steering server of this Media Presentation
+                 *  (<em>ISO/IEC 23009-1, 6th edition</em>, Annex K.3.6), or NULL if the <b>ContentSteering</b> element is not present.
+                 *  @return     a pointer to a dash::mpd::IContentSteering object
+                 */
+                virtual const IContentSteering *                    GetContentSteering              ()  const = 0;
 
                 /**
                  *  Returns a reference to a string that specifies an identifier for the Media Presentation. It is recommended to use an identifier that is unique within 

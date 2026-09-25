@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- libdash_mpd_test: content steering and service locations (ISO/IEC 23009-1, 6th edition, 5.6.6, Annex K.3.6, K.4.2.6) -->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" id="cs" profiles="urn:mpeg:dash:profile:isoff-live:2011"
+     type="dynamic" availabilityStartTime="2026-01-01T00:00:00Z" publishTime="2026-01-01T00:00:00Z"
+     minimumUpdatePeriod="PT10S" minBufferTime="PT2S">
+  <BaseURL serviceLocation="alpha">https://cdn-a.example.com/</BaseURL>
+  <BaseURL serviceLocation="beta">https://cdn-b.example.com/</BaseURL>
+  <Location serviceLocation="alpha">https://cdn-a.example.com/live.mpd</Location>
+  <Location>https://origin.example.com/live.mpd</Location>
+  <PatchLocation serviceLocation="beta" ttl="60">https://cdn-b.example.com/live.mpp</PatchLocation>
+  <ServiceDescription id="0">
+    <ContentSteering clientRequirement="false">https://steering.example.com/sd</ContentSteering>
+    <ContentSteering defaultServiceLocation="alpha">https://steering2.example.com/sd</ContentSteering>
+  </ServiceDescription>
+  <Period id="p0" start="PT0S">
+    <AdaptationSet id="1" contentType="video">
+      <SegmentTemplate media="v_$Number$.m4s" duration="2" startNumber="1"/>
+      <Representation id="v1" bandwidth="1000000"/>
+    </AdaptationSet>
+  </Period>
+  <ContentSteering defaultServiceLocation="beta" queryBeforeStart="true">
+      https://steering.example.com/app/instance1234 </ContentSteering>
+</MPD>

@@ -20,6 +20,7 @@ using namespace dash::metrics;
 
 MPD::MPD    () :
         leapSecondInformation(NULL),
+        contentSteering(NULL),
         id(""),
         type("static"),
         availabilityStarttime(""),
@@ -67,6 +68,9 @@ MPD::~MPD   ()
         delete(this->mpdPathBaseUrl);
     
     delete(leapSecondInformation);
+    delete(contentSteering);
+    for(size_t i = 0; i < this->locationElements.size(); i++)
+        delete(this->locationElements.at(i));
 }
 
 const std::vector<IProgramInformation *>&   MPD::GetProgramInformations             () const 
@@ -101,6 +105,15 @@ const std::vector<std::string>&             MPD::GetLocations                   
 void                                        MPD::AddLocation                        (const std::string& location)
 {
     this->locations.push_back(location);
+}
+const std::vector<ILocation *>&             MPD::GetLocationElements                () const
+{
+    return (std::vector<ILocation *> &) this->locationElements;
+}
+void                                        MPD::AddLocationElement                 (Location *location)
+{
+    if(location != NULL)
+        this->locationElements.push_back(location);
 }
 const std::vector<IPatchLocation*>&         MPD::GetPatchLocations                  () const
 {
@@ -197,6 +210,15 @@ const ILeapSecondInformation *              MPD::GetLeapSecondInformation       
 void                                        MPD::SetLeapSecondInformation           (LeapSecondInformation *leapSecondInformation)
 {
     this->leapSecondInformation = leapSecondInformation;
+}
+const IContentSteering *                    MPD::GetContentSteering                 ()  const
+{
+    return this->contentSteering;
+}
+void                                        MPD::SetContentSteering                 (ContentSteering *contentSteering)
+{
+    delete(this->contentSteering);
+    this->contentSteering = contentSteering;
 }
 const std::string&                          MPD::GetId                              ()  const
 {
