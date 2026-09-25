@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xlink="http://www.w3.org/1999/xlink"
+     profiles="urn:mpeg:dash:profile:isoff-live:2011" type="static" minBufferTime="PT2S"
+     mediaPresentationDuration="PT60S">
+  <Period id="p0">
+    <EventStream schemeIdUri="urn:example:ev" xlink:href="http://example.com/ev.xml"
+                 xlink:type="simple" xlink:show="embed" presentationTimeOffset="8589934592" timescale="1"/>
+    <EmptyAdaptationSet id="9" contentType="video"/>
+    <AdaptationSet id="1" contentType="video" maxHeight="1080" subsegmentStartsWithSAP="1">
+      <SegmentTemplate media="v_$Time$.m4s" timescale="90000" presentationTimeOffset="5000000000">
+        <FailoverContent valid="true"><FCS t="100" d="200"/></FailoverContent>
+        <SegmentTimeline>
+          <S t="5000000000" n="42" d="180000" r="-1" k="3"/>
+          <S d="180000" r="2"/>
+        </SegmentTimeline>
+      </SegmentTemplate>
+      <Representation id="v1" bandwidth="1000000" width="1920" height="1080"/>
+    </AdaptationSet>
+    <AdaptationSet id="2" contentType="audio">
+      <SegmentList duration="2"><FailoverContent><FCS t="0" d="10"/></FailoverContent>
+        <SegmentURL media="a1.m4s"/></SegmentList>
+      <Representation id="a1" bandwidth="128000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>

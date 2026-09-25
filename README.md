@@ -42,17 +42,18 @@ You can find the latest sources and binaries on github.
 4. After that all files will be provided in the bin folder
 5. You can test the library with the sampleplayer.exe. This application simply downloads the lowest representation of one of our dataset MPDs.
 
-### Ubuntu 14.04 (Kernel 3.19.0-71-generic)
-1. sudo apt-get install git-core build-essential cmake libxml2-dev libcurl4-openssl-dev
-2. git clone git://github.com/bitmovin/libdash.git
-3. cd libdash/libdash
-4. mkdir build
-5. cd build
-6. cmake ../
-7. make
-8. cd bin
-9. The library and a simple test of the network part of the library should be available now. You can test the network part of the library with
-10. ./libdash_networkpart_test
+### Linux and macOS
+Requires CMake 3.12 or newer, a C++11 compiler, libxml2, libcurl and zlib.
+
+1. Install the dependencies
+   * Ubuntu/Debian: `sudo apt-get install build-essential cmake libxml2-dev libcurl4-openssl-dev zlib1g-dev`
+   * macOS: libxml2, libcurl and zlib come with the SDK (Xcode or Command Line Tools); install CMake with `brew install cmake`
+2. git clone https://github.com/bitmovin/libdash.git
+3. cmake -S libdash/libdash -B build
+4. cmake --build build --parallel
+5. The library and test programs are in `build/bin`. Run the MPD parser tests with `ctest --test-dir build`
+
+To also check that the parser handles the official example MPDs, clone [MPEGGroup/DASHSchema](https://github.com/MPEGGroup/DASHSchema) and add `-DLIBDASH_SCHEMA_EXAMPLES_DIR=<path to DASHSchema>` in step 3.
 
 #### QTSamplePlayer
 Prerequisite: libdash must be built as described in the previous section.
