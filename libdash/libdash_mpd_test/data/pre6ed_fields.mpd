@@ -5,7 +5,6 @@
   <Period id="p0">
     <EventStream schemeIdUri="urn:example:ev" xlink:href="http://example.com/ev.xml"
                  xlink:type="simple" xlink:show="embed" presentationTimeOffset="8589934592" timescale="1"/>
-    <EmptyAdaptationSet id="9" contentType="video"/>
     <AdaptationSet id="1" contentType="video" maxHeight="1080" subsegmentStartsWithSAP="1">
       <SegmentTemplate media="v_$Time$.m4s" timescale="90000" presentationTimeOffset="5000000000">
         <FailoverContent valid="true"><FCS t="100" d="200"/></FailoverContent>
@@ -21,5 +20,6 @@
         <SegmentURL media="a1.m4s"/></SegmentList>
       <Representation id="a1" bandwidth="128000"/>
     </AdaptationSet>
+    <EmptyAdaptationSet id="9" contentType="video"/>
   </Period>
 </MPD>

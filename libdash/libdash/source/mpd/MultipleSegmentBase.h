@@ -38,12 +38,20 @@ namespace dash
                 uint32_t                                GetDuration             ()  const;
                 uint32_t                                GetStartNumber          ()  const;
                 uint32_t                                GetEndNumber            ()  const;
+                float                                   GetTolerance            ()  const;
+                uint64_t                                GetEndSubNumber         ()  const;
+                bool                                    HasEndSubNumber         ()  const;
+                uint64_t                                GetSegmentsInSequence   ()  const;
+                bool                                    HasSegmentsInSequence   ()  const;
 
                 void    SetSegmentTimeline      (SegmentTimeline *segmentTimeline);
                 void    SetBitstreamSwitching   (URLType *bitstreamSwitching);
                 void    SetDuration             (uint32_t duration);
                 void    SetStartNumber          (uint32_t startNumber);
                 void    SetEndNumber            (uint32_t endNumber);
+                void    SetTolerance            (float tolerance);
+                void    SetEndSubNumber         (uint64_t endSubNumber);
+                void    SetSegmentsInSequence   (uint64_t segmentsInSequence);
 
             protected:
                 SegmentTimeline                 *segmentTimeline;
@@ -51,6 +59,11 @@ namespace dash
                 uint32_t                        duration;
                 uint32_t                        startNumber;
                 uint32_t                        endNumber;
+                float                           tolerance;
+                uint64_t                        endSubNumber;
+                bool                            hasEndSubNumber;
+                uint64_t                        segmentsInSequence;
+                bool                            hasSegmentsInSequence;
         };
     }
 }

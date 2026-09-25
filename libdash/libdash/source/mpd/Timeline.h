@@ -32,12 +32,20 @@ namespace dash
                 uint64_t    GetDuration             ()  const;
                 int64_t     GetRepeatCount          ()  const;
                 uint32_t    GetSegmentsInSequence   ()  const;
+                uint32_t    GetPatternId            ()  const;
+                bool        HasPattern              ()  const;
+                uint32_t    GetPatternEntry         ()  const;
+                uint32_t    GetSsp                  ()  const;
+                bool        HasSsp                  ()  const;
 
                 void    SetStartTime            (uint64_t startTime);
                 void    SetNumber               (uint64_t number);
                 void    SetDuration             (uint64_t duration);
                 void    SetRepeatCount          (int64_t repeatCount);
                 void    SetSegmentsInSequence   (uint32_t segmentsInSequence);
+                void    SetPatternId            (uint32_t patternId);
+                void    SetPatternEntry         (uint32_t patternEntry);
+                void    SetSsp                  (uint32_t ssp);
 
             private:
                 uint64_t    startTime;
@@ -45,6 +53,11 @@ namespace dash
                 uint64_t    duration;
                 int64_t     repeatCount;
                 uint32_t    segmentsInSequence;
+                uint32_t    patternId;
+                bool        hasPattern;
+                uint32_t    patternEntry;
+                uint32_t    ssp;
+                bool        hasSsp;
         };
     }
 }

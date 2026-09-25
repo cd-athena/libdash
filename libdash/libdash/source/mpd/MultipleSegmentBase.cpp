@@ -22,7 +22,12 @@ MultipleSegmentBase::MultipleSegmentBase    () :
                         segmentTimeline(NULL),
                         duration(0),
                         startNumber(1),
-                        endNumber(1)
+                        endNumber(1),
+                        tolerance(50.0f),
+                        endSubNumber(0),
+                        hasEndSubNumber(false),
+                        segmentsInSequence(1),
+                        hasSegmentsInSequence(false)
 {
 }
 MultipleSegmentBase::~MultipleSegmentBase   ()
@@ -70,4 +75,38 @@ uint32_t                    MultipleSegmentBase::GetEndNumber           ()  cons
 void                        MultipleSegmentBase::SetEndNumber           (uint32_t endNumber)
 {
     this->endNumber = endNumber;
+}
+float                       MultipleSegmentBase::GetTolerance           ()  const
+{
+    return this->tolerance;
+}
+void                        MultipleSegmentBase::SetTolerance           (float tolerance)
+{
+    this->tolerance = tolerance;
+}
+uint64_t                    MultipleSegmentBase::GetEndSubNumber        ()  const
+{
+    return this->endSubNumber;
+}
+bool                        MultipleSegmentBase::HasEndSubNumber        ()  const
+{
+    return this->hasEndSubNumber;
+}
+void                        MultipleSegmentBase::SetEndSubNumber        (uint64_t endSubNumber)
+{
+    this->endSubNumber    = endSubNumber;
+    this->hasEndSubNumber = true;
+}
+uint64_t                    MultipleSegmentBase::GetSegmentsInSequence  ()  const
+{
+    return this->segmentsInSequence;
+}
+bool                        MultipleSegmentBase::HasSegmentsInSequence  ()  const
+{
+    return this->hasSegmentsInSequence;
+}
+void                        MultipleSegmentBase::SetSegmentsInSequence  (uint64_t segmentsInSequence)
+{
+    this->segmentsInSequence    = segmentsInSequence;
+    this->hasSegmentsInSequence = true;
 }

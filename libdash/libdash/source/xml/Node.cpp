@@ -316,6 +316,18 @@ dash::mpd::Timeline*                        Node::ToTimeline            ()  cons
     {
         timeline->SetSegmentsInSequence(strtoul(this->GetAttributeValue("k").c_str(), NULL, 10));
     }
+    if (this->HasAttribute("p"))
+    {
+        timeline->SetPatternId(strtoul(this->GetAttributeValue("p").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("pE"))
+    {
+        timeline->SetPatternEntry(strtoul(this->GetAttributeValue("pE").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("ssp"))
+    {
+        timeline->SetSsp(strtoul(this->GetAttributeValue("ssp").c_str(), NULL, 10));
+    }
 
     timeline->AddRawAttributes(this->attributes);
     return timeline;
@@ -332,11 +344,99 @@ dash::mpd::SegmentTimeline*                 Node::ToSegmentTimeline     ()  cons
             segmentTimeline->AddTimeline(subNodes.at(i)->ToTimeline());
             continue;
         }
+        if (subNodes.at(i)->GetName() == "Pattern")
+        {
+            segmentTimeline->AddPattern(subNodes.at(i)->ToPattern());
+            continue;
+        }
         segmentTimeline->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
     segmentTimeline->AddRawAttributes(this->attributes);
     return segmentTimeline;
+}
+dash::mpd::Pattern*                         Node::ToPattern             ()  const
+{
+    dash::mpd::Pattern* pattern = new dash::mpd::Pattern();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("id"))
+    {
+        pattern->SetId(strtoull(this->GetAttributeValue("id").c_str(), NULL, 10));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        if (subNodes.at(i)->GetName() == "P")
+        {
+            pattern->AddRunLength(subNodes.at(i)->ToRunLength());
+            continue;
+        }
+        pattern->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    pattern->AddRawAttributes(this->attributes);
+    return pattern;
+}
+dash::mpd::RunLength*                       Node::ToRunLength           ()  const
+{
+    dash::mpd::RunLength* runLength = new dash::mpd::RunLength();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("d"))
+    {
+        runLength->SetDuration(strtoull(this->GetAttributeValue("d").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("r"))
+    {
+        runLength->SetRepeatCount(strtoul(this->GetAttributeValue("r").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("k"))
+    {
+        runLength->SetSegmentsInSequence(strtoul(this->GetAttributeValue("k").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("ssp"))
+    {
+        runLength->SetSsp(strtoul(this->GetAttributeValue("ssp").c_str(), NULL, 10));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        runLength->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    runLength->AddRawAttributes(this->attributes);
+    return runLength;
+}
+dash::mpd::SegmentSequenceProperties*       Node::ToSegmentSequenceProperties   ()  const
+{
+    dash::mpd::SegmentSequenceProperties* segmentSequenceProperties = new dash::mpd::SegmentSequenceProperties();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("sapType"))
+    {
+        segmentSequenceProperties->SetSapType(strtoul(this->GetAttributeValue("sapType").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("cadence"))
+    {
+        segmentSequenceProperties->SetCadence(strtoul(this->GetAttributeValue("cadence").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("event"))
+    {
+        segmentSequenceProperties->SetEvent(dash::helpers::String::ToBool(this->GetAttributeValue("event")));
+    }
+    if (this->HasAttribute("alignment"))
+    {
+        segmentSequenceProperties->SetAlignment(this->GetAttributeValue("alignment"));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        segmentSequenceProperties->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    segmentSequenceProperties->AddRawAttributes(this->attributes);
+    return segmentSequenceProperties;
 }
 dash::mpd::SegmentURL*                      Node::ToSegmentURL          ()  const
 {
@@ -1936,6 +2036,11 @@ void                                        Node::SetCommonValuesForRep (dash::m
             object.AddResync(subNodes.at(i)->ToResync());
             continue;
         }
+        if (subNodes.at(i)->GetName() == "SegmentSequenceProperties")
+        {
+            object.AddSegmentSequenceProperties(subNodes.at(i)->ToSegmentSequenceProperties());
+            continue;
+        }
     }
 }
 void                                        Node::SetCommonValuesForDesc(dash::mpd::Descriptor& object) const
@@ -2043,6 +2148,18 @@ void                                        Node::SetCommonValuesForMSeg(dash::m
     if (this->HasAttribute("endNumber"))
     {
         object.SetEndNumber(strtoul(this->GetAttributeValue("endNumber").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("tolerance"))
+    {
+        object.SetTolerance(strtof(this->GetAttributeValue("tolerance").c_str(), NULL));
+    }
+    if (this->HasAttribute("endSubNumber"))
+    {
+        object.SetEndSubNumber(strtoull(this->GetAttributeValue("endSubNumber").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("k"))
+    {
+        object.SetSegmentsInSequence(strtoull(this->GetAttributeValue("k").c_str(), NULL, 10));
     }
 
     for(size_t i = 0; i < subNodes.size(); i++)

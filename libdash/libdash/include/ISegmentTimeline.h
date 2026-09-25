@@ -27,6 +27,7 @@
 #include "config.h"
 
 #include "ITimeline.h"
+#include "IPattern.h"
 #include "IMPDElement.h"
 
 namespace dash
@@ -43,6 +44,13 @@ namespace dash
                  *  @return     a reference to vector of pointers to dash::mpd::ITimeline objects
                  */
                 virtual std::vector<ITimeline *>&   GetTimelines ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IPattern objects, that correspond to the <b><tt>Pattern</tt></b> elements
+                 *  (<em>ISO/IEC 23009-1, 6th edition</em>). <b><tt>S</tt></b> elements refer to them through \c \@p.
+                 *  @return     a reference to a vector of pointers to dash::mpd::IPattern objects
+                 */
+                virtual const std::vector<IPattern *>& GetPatterns  ()  const = 0;
         };
     }
 }

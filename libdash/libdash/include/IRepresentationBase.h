@@ -34,6 +34,7 @@
 #include "IProducerReferenceTime.h"
 #include "IRandomAccess.h"
 #include "IResync.h"
+#include "ISegmentSequenceProperties.h"
 
 namespace dash
 {
@@ -159,6 +160,13 @@ namespace dash
                  *  @return     a reference to a vector of pointers to dash::mpd::IResync objects
                  */
                 virtual const std::vector<IResync *>&                  GetResyncs                       () const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::ISegmentSequenceProperties objects that describe the Segment Sequences
+                 *  of this element, as specified in <em>ISO/IEC 23009-1, 6th edition</em>.
+                 *  @return     a reference to a vector of pointers to dash::mpd::ISegmentSequenceProperties objects
+                 */
+                virtual const std::vector<ISegmentSequenceProperties *>& GetSegmentSequenceProperties   () const = 0;
 
                 /**
                  *  Returns a reference to a vector of strings that specifies the profiles which the associated Representation(s) 

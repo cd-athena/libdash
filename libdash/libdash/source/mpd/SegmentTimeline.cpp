@@ -20,6 +20,8 @@ SegmentTimeline::~SegmentTimeline   ()
 {
     for (size_t i=0; i < this->timelines.size(); i++)
         delete(this->timelines.at(i));
+    for (size_t i=0; i < this->patterns.size(); i++)
+        delete(this->patterns.at(i));
 }
 
 std::vector<ITimeline *>&   SegmentTimeline::GetTimelines   ()  const
@@ -29,4 +31,13 @@ std::vector<ITimeline *>&   SegmentTimeline::GetTimelines   ()  const
 void                        SegmentTimeline::AddTimeline    (Timeline *timeline)
 {
     this->timelines.push_back(timeline);
+}
+const std::vector<IPattern *>&  SegmentTimeline::GetPatterns    ()  const
+{
+    return (std::vector<IPattern *> &) this->patterns;
+}
+void                            SegmentTimeline::AddPattern     (Pattern *pattern)
+{
+    if (pattern != NULL)
+        this->patterns.push_back(pattern);
 }

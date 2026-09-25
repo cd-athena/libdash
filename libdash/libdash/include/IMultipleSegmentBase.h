@@ -71,6 +71,44 @@ namespace dash
                  *  @return     an unsigned integer
                  */
                 virtual uint32_t                    GetEndNumber          ()  const = 0;
+
+                /**
+                 *  Returns the maximum absolute difference, in percent, between the MPD-derived start time and the media start time of any Segment
+                 *  or Segment Sequence in the Representation (<em>ISO/IEC 23009-1, 6th edition</em>, see 7.2.1). Default: 50.
+                 *  The value is returned as signalled; the specification says values larger than 50 are treated as 50. \n\n
+                 *  Corresponds to the \c \@tolerance attribute.
+                 *  @return     a float value
+                 */
+                virtual float                       GetTolerance          ()  const = 0;
+
+                /**
+                 *  Returns the sub-number of the last Partial Segment in the last Segment Sequence of this Representation in the Period
+                 *  (<em>ISO/IEC 23009-1, 6th edition</em>). Only used together with \c \@k and without a <tt><b>SegmentTimeline</b></tt>.
+                 *  Only meaningful if HasEndSubNumber() returns true. \n\n
+                 *  Corresponds to the \c \@endSubNumber attribute.
+                 *  @return     an unsigned 64-bit integer
+                 */
+                virtual uint64_t                    GetEndSubNumber       ()  const = 0;
+
+                /**
+                 *  Returns true if the \c \@endSubNumber attribute is present.
+                 *  @return     a bool value
+                 */
+                virtual bool                        HasEndSubNumber       ()  const = 0;
+
+                /**
+                 *  Returns the number of Partial Segments in each Segment Sequence except the last one (<em>ISO/IEC 23009-1, 6th edition</em>).
+                 *  Values greater than 1 mean Segment Sequences are used. Default: 1. \n\n
+                 *  Corresponds to the \c \@k attribute.
+                 *  @return     an unsigned 64-bit integer
+                 */
+                virtual uint64_t                    GetSegmentsInSequence ()  const = 0;
+
+                /**
+                 *  Returns true if the \c \@k attribute is present (GetSegmentsInSequence() returns 1 otherwise).
+                 *  @return     a bool value
+                 */
+                virtual bool                        HasSegmentsInSequence ()  const = 0;
         };
     }
 }

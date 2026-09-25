@@ -47,7 +47,8 @@ namespace dash
 
                 /**
                  *  Returns an integer that specifies the Segment number of the first Segment in the series.
-                 *  If not present, the number is derived from the previous <tt><b>S</b></tt> element, or from \c \@startNumber for the first one. \n\n
+                 *  If not present, numbering continues from the previous <tt><b>S</b></tt> element (or \c \@startNumber for the first one).
+                 *  A value greater than the next expected number means that one or more prior Segments in the timeline are unavailable. \n\n
                  *  \em Number corresponds to the \c \@n attribute. Use the raw attributes to check whether it was present.
                  *  @return     an unsigned 64-bit integer
                  */
@@ -76,6 +77,43 @@ namespace dash
                  *  @return     an unsigned integer
                  */
                 virtual uint32_t    GetSegmentsInSequence   ()  const = 0;
+
+                /**
+                 *  Returns the \c \@id of the duration pattern (dash::mpd::IPattern) this element uses (<em>ISO/IEC 23009-1, 6th edition</em>).
+                 *  The Pattern is defined in this <tt><b>SegmentTimeline</b></tt> or in a <tt><b>SegmentTimeline</b></tt> of a parent element.
+                 *  Not present together with \c \@d. Only meaningful if HasPattern() returns true. \n\n
+                 *  Corresponds to the \c \@p attribute.
+                 *  @return     an unsigned integer
+                 */
+                virtual uint32_t    GetPatternId            ()  const = 0;
+
+                /**
+                 *  Returns true if the \c \@p attribute is present, i.e. this element uses a <b><tt>Pattern</tt></b>.
+                 *  @return     a bool value
+                 */
+                virtual bool        HasPattern              ()  const = 0;
+
+                /**
+                 *  Returns the pattern entry point: the zero-based index of the Segment or Segment Sequence in the Pattern referenced by \c \@p
+                 *  at which this element starts. Default: 0. \n\n
+                 *  Corresponds to the \c \@pE attribute.
+                 *  @return     an unsigned integer
+                 */
+                virtual uint32_t    GetPatternEntry         ()  const = 0;
+
+                /**
+                 *  Returns the \c \@id of the dash::mpd::IPattern in this <tt><b>SegmentTimeline</b></tt> that defines the Segment Sequence
+                 *  used by this element. Either \c \@ssp or \c \@d is present. Only meaningful if HasSsp() returns true. \n\n
+                 *  Corresponds to the \c \@ssp attribute.
+                 *  @return     an unsigned integer
+                 */
+                virtual uint32_t    GetSsp                  ()  const = 0;
+
+                /**
+                 *  Returns true if the \c \@ssp attribute is present.
+                 *  @return     a bool value
+                 */
+                virtual bool        HasSsp                  ()  const = 0;
         };
     }
 }

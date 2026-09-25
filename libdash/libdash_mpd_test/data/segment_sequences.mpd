@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- libdash_mpd_test: segment sequences and duration patterns (ISO/IEC 23009-1, 6th edition, 5.3.5.6, 5.3.9.6.5, 5.3.9.7) -->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011"
+     type="static" minBufferTime="PT2S" mediaPresentationDuration="PT600S">
+  <Period id="p0">
+    <!-- Segment Sequence Representation: S@ssp references a Pattern whose P elements carry @k -->
+    <AdaptationSet id="1" contentType="video" segmentAlignment="true" startWithSAP="1">
+      <EssentialProperty schemeIdUri="urn:mpeg:dash:ssr:2023"/>
+      <EssentialProperty schemeIdUri="urn:mpeg:dash:pattern:2024"/>
+      <SegmentSequenceProperties sapType="2" cadence="4" alignment="v2 v3"/>
+      <SegmentSequenceProperties event="false"/>
+      <SegmentTemplate media="v_$Number$_$SubNumber$.m4s" timescale="90000" startNumber="1">
+        <SegmentTimeline>
+          <Pattern id="1">
+            <P d="172800" k="16"/>
+            <P d="180000" r="2" k="8"/>
+          </Pattern>
+          <Pattern id="3">
+            <P ssp="1" r="1"/>
+          </Pattern>
+          <S t="546975158" r="14" ssp="1"/>
+          <S ssp="1"/>
+        </SegmentTimeline>
+      </SegmentTemplate>
+      <Representation id="v1" bandwidth="1000000">
+        <SegmentSequenceProperties sapType="1" cadence="16"/>
+      </Representation>
+    </AdaptationSet>
+    <!-- Duration pattern: S@p / S@pE, as in example G.27 -->
+    <AdaptationSet id="2" contentType="audio">
+      <EssentialProperty schemeIdUri="urn:mpeg:dash:pattern:2024"/>
+      <SegmentTemplate media="a_$Time$.m4s" timescale="90000" tolerance="12.5">
+        <SegmentTimeline>
+          <Pattern id="2">
+            <P d="176640"/>
+            <P d="180480" r="10"/>
+          </Pattern>
+          <S t="546975158" r="164" p="2" pE="1"/>
+        </SegmentTimeline>
+      </SegmentTemplate>
+      <Representation id="a1" bandwidth="128000"/>
+    </AdaptationSet>
+    <!-- Segment Sequences with SegmentTemplate@duration and @k, last sequence ends at sub-number 7 -->
+    <AdaptationSet id="3" contentType="text">
+      <EssentialProperty schemeIdUri="urn:mpeg:dash:ssr:2023"/>
+      <SegmentTemplate media="t_$Number$_$SubNumber$.m4s" timescale="1000" duration="16000" k="16" endSubNumber="7"/>
+      <Representation id="t1" bandwidth="8000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>

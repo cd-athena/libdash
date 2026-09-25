@@ -61,6 +61,8 @@ RepresentationBase::~RepresentationBase ()
         delete(this->producerReferenceTimes.at(i));
     for(size_t i = 0; i < this->resyncs.size(); i++)
         delete(this->resyncs.at(i));
+    for(size_t i = 0; i < this->segmentSequenceProperties.size(); i++)
+        delete(this->segmentSequenceProperties.at(i));
     delete(outputProtection);
 }
 
@@ -175,6 +177,14 @@ const std::vector<IResync *>&                  RepresentationBase::GetResyncs   
 void                                           RepresentationBase::AddResync                   (Resync *resync)
 {
     this->resyncs.push_back(resync);
+}
+const std::vector<ISegmentSequenceProperties *>& RepresentationBase::GetSegmentSequenceProperties   ()  const
+{
+    return (std::vector<ISegmentSequenceProperties *> &) this->segmentSequenceProperties;
+}
+void                                           RepresentationBase::AddSegmentSequenceProperties    (SegmentSequenceProperties *segmentSequenceProperties)
+{
+    this->segmentSequenceProperties.push_back(segmentSequenceProperties);
 }
 const std::vector<std::string>&     RepresentationBase::GetProfiles                     () const
 {

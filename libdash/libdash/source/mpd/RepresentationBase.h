@@ -28,6 +28,7 @@
 #include "ProducerReferenceTime.h"
 #include "RandomAccess.h"
 #include "Resync.h"
+#include "SegmentSequenceProperties.h"
 #include "../helpers/String.h"
 #include "AbstractMPDElement.h"
 
@@ -55,6 +56,7 @@ namespace dash
                 const std::vector<IContentPopularityRate *>&   GetContentPopularityRates       () const;
                 const std::vector<IProducerReferenceTime *>&   GetProducerReferenceTimes       () const;
                 const std::vector<IResync *>&                  GetResyncs                      () const;
+                const std::vector<ISegmentSequenceProperties *>& GetSegmentSequenceProperties  () const;
                 const std::vector<std::string>&                GetProfiles                     () const;
                 uint32_t                                       GetWidth                        () const;
                 uint32_t                                       GetHeight                       () const;
@@ -87,6 +89,7 @@ namespace dash
                 void    AddContentPopularityRate        (ContentPopularityRate *contentPopularityRate);
                 void    AddProducerReferenceTime        (ProducerReferenceTime *producerReferenceTime);
                 void    AddResync                       (Resync *resync);
+                void    AddSegmentSequenceProperties    (SegmentSequenceProperties *segmentSequenceProperties);
                 void    SetProfiles                     (const std::string& profiles);
                 void    SetWidth                        (uint32_t width);
                 void    SetHeight                       (uint32_t height);
@@ -120,6 +123,7 @@ namespace dash
                 std::vector<ContentPopularityRate *>   contentPopularityRates;
                 std::vector<ProducerReferenceTime *>   producerReferenceTimes;
                 std::vector<Resync *>                  resyncs;
+                std::vector<SegmentSequenceProperties *> segmentSequenceProperties;
                 std::vector<std::string>               profiles;
                 uint32_t                               width;
                 uint32_t                               height;

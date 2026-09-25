@@ -17,6 +17,7 @@
 #include "ISegmentTimeline.h"
 #include "AbstractMPDElement.h"
 #include "Timeline.h"
+#include "Pattern.h"
 
 namespace dash
 {
@@ -28,11 +29,14 @@ namespace dash
                 SegmentTimeline             ();
                 virtual ~SegmentTimeline    ();
 
-                std::vector<ITimeline *>&   GetTimelines    ()  const;
-                void                        AddTimeline     (Timeline *timeline);
+                std::vector<ITimeline *>&       GetTimelines    ()  const;
+                const std::vector<IPattern *>&  GetPatterns     ()  const;
+                void                            AddTimeline     (Timeline *timeline);
+                void                            AddPattern      (Pattern *pattern);
 
             private:
                 std::vector<ITimeline *>    timelines;
+                std::vector<Pattern *>      patterns;
         };
     }
 }

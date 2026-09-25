@@ -18,7 +18,12 @@ Timeline::Timeline    ()  :
                 number(0),
                 duration(0),
                 repeatCount(0),
-                segmentsInSequence(1)
+                segmentsInSequence(1),
+                patternId(0),
+                hasPattern(false),
+                patternEntry(0),
+                ssp(0),
+                hasSsp(false)
 {
 }
 Timeline::~Timeline   ()
@@ -64,4 +69,38 @@ uint32_t    Timeline::GetSegmentsInSequence ()  const
 void        Timeline::SetSegmentsInSequence (uint32_t segmentsInSequence)
 {
     this->segmentsInSequence = segmentsInSequence;
+}
+uint32_t    Timeline::GetPatternId          ()  const
+{
+    return this->patternId;
+}
+bool        Timeline::HasPattern            ()  const
+{
+    return this->hasPattern;
+}
+void        Timeline::SetPatternId          (uint32_t patternId)
+{
+    this->patternId  = patternId;
+    this->hasPattern = true;
+}
+uint32_t    Timeline::GetPatternEntry       ()  const
+{
+    return this->patternEntry;
+}
+void        Timeline::SetPatternEntry       (uint32_t patternEntry)
+{
+    this->patternEntry = patternEntry;
+}
+uint32_t    Timeline::GetSsp                ()  const
+{
+    return this->ssp;
+}
+bool        Timeline::HasSsp                ()  const
+{
+    return this->hasSsp;
+}
+void        Timeline::SetSsp                (uint32_t ssp)
+{
+    this->ssp    = ssp;
+    this->hasSsp = true;
 }

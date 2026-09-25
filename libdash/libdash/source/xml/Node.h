@@ -57,6 +57,9 @@
 #include "../mpd/SegmentList.h"
 #include "../mpd/SegmentTemplate.h"
 #include "../mpd/SegmentTimeline.h"
+#include "../mpd/SegmentSequenceProperties.h"
+#include "../mpd/Pattern.h"
+#include "../mpd/RunLength.h"
 #include "../mpd/SegmentURL.h"
 #include "../mpd/ServiceDescription.h"
 #include "../mpd/SubRepresentation.h"
@@ -139,6 +142,9 @@ namespace dash
                 dash::mpd::ServiceDescription*              ToServiceDescription    ()  const;
                 dash::mpd::Timeline*                        ToTimeline              ()  const;
                 dash::mpd::SegmentTimeline*                 ToSegmentTimeline       ()  const;
+                dash::mpd::Pattern*                         ToPattern               ()  const;
+                dash::mpd::RunLength*                       ToRunLength             ()  const;
+                dash::mpd::SegmentSequenceProperties*       ToSegmentSequenceProperties ()  const;
                 dash::mpd::SegmentURL*                      ToSegmentURL            ()  const;
                 dash::mpd::SubRepresentation*               ToSubRepresentation     ()  const;
                 dash::mpd::Subset*                          ToSubset                ()  const;
