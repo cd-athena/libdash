@@ -30,6 +30,8 @@ ServiceDescription::~ServiceDescription   ()
         delete(this->operatingBandwidth.at(i));
     for (size_t i=0; i < this->contentSteerings.size(); i++)
         delete(this->contentSteerings.at(i));
+    for (size_t i=0; i < this->clientDataReportings.size(); i++)
+        delete(this->clientDataReportings.at(i));
 }
 
 const std::vector<IDescriptor *>&          ServiceDescription::GetScope               ()  const
@@ -88,4 +90,13 @@ void                                       ServiceDescription::AddContentSteerin
 {
     if (contentSteering != NULL)
         this->contentSteerings.push_back(contentSteering);
+}
+const std::vector<IClientDataReporting *>& ServiceDescription::GetClientDataReportings    ()  const
+{
+    return this->clientDataReportings;
+}
+void                                       ServiceDescription::AddClientDataReporting     (ClientDataReporting* clientDataReporting)
+{
+    if (clientDataReporting != NULL)
+        this->clientDataReportings.push_back(clientDataReporting);
 }

@@ -26,6 +26,7 @@
 #include "IOperatingQuality.h"
 #include "IOperatingBandwidth.h"
 #include "IContentSteering.h"
+#include "IClientDataReporting.h"
 
 namespace dash
 {
@@ -84,6 +85,13 @@ namespace dash
                  *  @return     a reference to a vector of pointers to dash::mpd::IContentSteering objects
                  */
                 virtual const std::vector<IContentSteering *>&     GetContentSteerings       ()  const = 0;
+
+                /**
+                 *  Returns a reference to a vector of pointers to dash::mpd::IClientDataReporting objects that specify client data reporting
+                 *  for the service, e.g. CMCD (<em>ISO/IEC 23009-1, 6th edition</em>, Annex K.4.2.7).
+                 *  @return     a reference to a vector of pointers to dash::mpd::IClientDataReporting objects
+                 */
+                virtual const std::vector<IClientDataReporting *>& GetClientDataReportings   ()  const = 0;
                 
                 /**
                  *  Returns an unsigned integer that specifies a unique identifier for this Service Description.

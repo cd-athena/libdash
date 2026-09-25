@@ -7,6 +7,7 @@
  *   libdash_mpd_test sequences <segment_sequences.mpd>    checks segment sequences and duration patterns
  *   libdash_mpd_test urlparams <url_parameters.mpd>       checks RequestParam and EventStream children
  *   libdash_mpd_test steering  <content_steering.mpd>     checks ContentSteering and @serviceLocation
+ *   libdash_mpd_test cmcd      <cmcd.mpd>                 checks ClientDataReporting and CMCDParameters
  *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses
  *
  * This source code and its use and distribution, is subject to the terms
@@ -285,6 +286,59 @@ static int TestSteering (IDASHManager *manager, char *path)
     delete mpd;
     return 0;
 }
+static int TestCMCD (IDASHManager *manager, char *path)
+{
+    IMPD *mpd = manager->Open(path);
+    CHECK(mpd != NULL);
+    if (!mpd)
+        return 1;
+
+    CHECK(mpd->GetServiceDescriptions().size() == 2);
+
+    // Service Description 1: all attributes present
+    const std::vector<IClientDataReporting *> &reportings = mpd->GetServiceDescriptions().at(0)->GetClientDataReportings();
+    CHECK(reportings.size() == 1);
+    if (reportings.size() == 1)
+    {
+        IClientDataReporting *reporting = reportings.at(0);
+        CHECK(reporting->GetSchemeIdUri() == "urn:mpeg:dash:cta-5004:2023");
+        CHECK(reporting->GetValue() == "1");
+        CHECK(reporting->GetServiceLocations().size() == 2 && reporting->GetServiceLocations().at(1) == "beta");
+        CHECK(reporting->GetAdaptationSets().size() == 2 && reporting->GetAdaptationSets().at(0) == 1 && reporting->GetAdaptationSets().at(1) == 3);
+        CHECK(reporting->GetAdditionalSubNodes().empty());
+        CHECK(reporting->GetCMCDParameters().size() == 1);
+        if (reporting->GetCMCDParameters().size() == 1)
+        {
+            ICMCDParameters *cmcd = reporting->GetCMCDParameters().at(0);
+            CHECK(cmcd->GetVersion() == 2);
+            CHECK(cmcd->GetMode() == "header");
+            CHECK(cmcd->GetIncludeInRequests().size() == 2 && cmcd->GetIncludeInRequests().at(1) == "mpd");
+            CHECK(cmcd->GetKeys().size() == 9 && cmcd->GetKeys().at(0) == "br" && cmcd->GetKeys().at(8) == "v");
+            CHECK(cmcd->GetContentID() == "movie-42");
+            CHECK(cmcd->GetSessionID() == "6e2fb550-c457-11e9-bb97-0800200c9a66");
+        }
+    }
+    CHECK(mpd->GetServiceDescriptions().at(0)->GetAdditionalSubNodes().empty());
+
+    // Service Description 2: defaults
+    const std::vector<IClientDataReporting *> &reportings2 = mpd->GetServiceDescriptions().at(1)->GetClientDataReportings();
+    CHECK(reportings2.size() == 1);
+    if (reportings2.size() == 1 && reportings2.at(0)->GetCMCDParameters().size() == 1)
+    {
+        CHECK(reportings2.at(0)->GetServiceLocations().empty());
+        CHECK(reportings2.at(0)->GetAdaptationSets().empty());
+        ICMCDParameters *cmcd = reportings2.at(0)->GetCMCDParameters().at(0);
+        CHECK(cmcd->GetVersion() == 1);
+        CHECK(cmcd->GetMode() == "query");
+        CHECK(cmcd->GetIncludeInRequests().size() == 1 && cmcd->GetIncludeInRequests().at(0) == "segment");
+        CHECK(cmcd->GetKeys().size() == 1);
+        CHECK(cmcd->GetContentID().empty());
+        CHECK(cmcd->GetSessionID().empty());
+    }
+
+    delete mpd;
+    return 0;
+}
 static void TestSmoke (IDASHManager *manager, int count, char **paths)
 {
     for (int i = 0; i < count; i++)
@@ -299,9 +353,9 @@ static void TestSmoke (IDASHManager *manager, int count, char **paths)
 
 int main (int argc, char **argv)
 {
-    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "smoke")))
+    if (argc < 3 || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "smoke")))
     {
-        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | smoke <file.mpd>...\n", argv[0]);
+        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | smoke <file.mpd>...\n", argv[0]);
         return 2;
     }
 
@@ -315,6 +369,8 @@ int main (int argc, char **argv)
         TestUrlParams(manager, argv[2]);
     else if (!strcmp(argv[1], "steering"))
         TestSteering(manager, argv[2]);
+    else if (!strcmp(argv[1], "cmcd"))
+        TestCMCD(manager, argv[2]);
     else
         TestSmoke(manager, argc - 2, argv + 2);
 

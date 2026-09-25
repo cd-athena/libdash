@@ -532,6 +532,83 @@ dash::mpd::Location*                        Node::ToLocation            ()  cons
     location->AddRawAttributes(this->attributes);
     return location;
 }
+dash::mpd::ClientDataReporting*             Node::ToClientDataReporting ()  const
+{
+    dash::mpd::ClientDataReporting* clientDataReporting = new dash::mpd::ClientDataReporting();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("schemeIdUri"))
+    {
+        clientDataReporting->SetSchemeIdUri(this->GetAttributeValue("schemeIdUri"));
+    }
+    if (this->HasAttribute("value"))
+    {
+        clientDataReporting->SetValue(this->GetAttributeValue("value"));
+    }
+    if (this->HasAttribute("id"))
+    {
+        clientDataReporting->SetId(this->GetAttributeValue("id"));
+    }
+    if (this->HasAttribute("serviceLocations"))
+    {
+        clientDataReporting->SetServiceLocations(this->GetAttributeValue("serviceLocations"));
+    }
+    if (this->HasAttribute("adaptationSets"))
+    {
+        clientDataReporting->SetAdaptationSets(this->GetAttributeValue("adaptationSets"));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        if (subNodes.at(i)->GetName() == "CMCDParameters")
+        {
+            clientDataReporting->AddCMCDParameters(subNodes.at(i)->ToCMCDParameters());
+            continue;
+        }
+        clientDataReporting->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    clientDataReporting->AddRawAttributes(this->attributes);
+    return clientDataReporting;
+}
+dash::mpd::CMCDParameters*                  Node::ToCMCDParameters      ()  const
+{
+    dash::mpd::CMCDParameters* cmcdParameters = new dash::mpd::CMCDParameters();
+    std::vector<Node *> subNodes = this->GetSubNodes();
+
+    if (this->HasAttribute("version"))
+    {
+        cmcdParameters->SetVersion(strtoul(this->GetAttributeValue("version").c_str(), NULL, 10));
+    }
+    if (this->HasAttribute("mode"))
+    {
+        cmcdParameters->SetMode(this->GetAttributeValue("mode"));
+    }
+    if (this->HasAttribute("includeInRequests"))
+    {
+        cmcdParameters->SetIncludeInRequests(this->GetAttributeValue("includeInRequests"));
+    }
+    if (this->HasAttribute("keys"))
+    {
+        cmcdParameters->SetKeys(this->GetAttributeValue("keys"));
+    }
+    if (this->HasAttribute("contentID"))
+    {
+        cmcdParameters->SetContentID(this->GetAttributeValue("contentID"));
+    }
+    if (this->HasAttribute("sessionID"))
+    {
+        cmcdParameters->SetSessionID(this->GetAttributeValue("sessionID"));
+    }
+
+    for(size_t i = 0; i < subNodes.size(); i++)
+    {
+        cmcdParameters->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+    }
+
+    cmcdParameters->AddRawAttributes(this->attributes);
+    return cmcdParameters;
+}
 dash::mpd::SegmentURL*                      Node::ToSegmentURL          ()  const
 {
     dash::mpd::SegmentURL *segmentUrl = new dash::mpd::SegmentURL();
@@ -1241,6 +1318,11 @@ dash::mpd::ServiceDescription*            Node::ToServiceDescription       ()  c
         if (subNodes.at(i)->GetName() == "ContentSteering")
         {
             serviceDescription->AddContentSteering(subNodes.at(i)->ToContentSteering());
+            continue;
+        }
+        if (subNodes.at(i)->GetName() == "ClientDataReporting")
+        {
+            serviceDescription->AddClientDataReporting(subNodes.at(i)->ToClientDataReporting());
             continue;
         }
         serviceDescription->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));

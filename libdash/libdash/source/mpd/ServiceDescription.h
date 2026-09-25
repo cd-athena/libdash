@@ -22,6 +22,7 @@
 #include "OperatingQuality.h"
 #include "OperatingBandwidth.h"
 #include "ContentSteering.h"
+#include "ClientDataReporting.h"
 
 namespace dash
 {
@@ -39,6 +40,7 @@ namespace dash
                 const std::vector<IOperatingQuality *>&    GetOperatingQuality       ()  const;
                 const std::vector<IOperatingBandwidth *>&  GetOperatingBandwidth     ()  const;
                 const std::vector<IContentSteering *>&     GetContentSteerings       ()  const;
+                const std::vector<IClientDataReporting *>& GetClientDataReportings   ()  const;
                 uint32_t                                   GetId                     ()  const;
 
                 void    AddScope                 (Descriptor* scope);
@@ -47,6 +49,7 @@ namespace dash
                 void    AddOperatingQuality      (OperatingQuality* operatingQuality);
                 void    AddOperatingBandwidth    (OperatingBandwidth* operatingBandwidth);
                 void    AddContentSteering       (ContentSteering* contentSteering);
+                void    AddClientDataReporting   (ClientDataReporting* clientDataReporting);
                 void    SetId                    (uint32_t id);
 
             private:
@@ -56,6 +59,7 @@ namespace dash
                 std::vector<IOperatingQuality *>     operatingQuality;
                 std::vector<IOperatingBandwidth *>   operatingBandwidth;
                 std::vector<IContentSteering *>      contentSteerings;
+                std::vector<IClientDataReporting *>  clientDataReportings;
                 uint32_t                             id;
                 
         };

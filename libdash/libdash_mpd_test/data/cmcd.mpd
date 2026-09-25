@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- libdash_mpd_test: client data reporting and CMCD (ISO/IEC 23009-1, 6th edition, Annex K.3.7, K.4.2.7, modelled on example K.6.4) -->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011"
+     type="static" minBufferTime="PT2S" mediaPresentationDuration="PT60S">
+  <BaseURL serviceLocation="alpha">https://cdn1.example.com/</BaseURL>
+  <BaseURL serviceLocation="beta">https://cdn2.example.com/</BaseURL>
+  <ServiceDescription id="1250">
+    <ClientDataReporting schemeIdUri="urn:mpeg:dash:cta-5004:2023" value="1" serviceLocations="alpha beta" adaptationSets="1 3">
+      <CMCDParameters mode="header" includeInRequests="segment mpd" keys="br bl cid dl mtp nor ot sf v"
+                      contentID="movie-42" sessionID="6e2fb550-c457-11e9-bb97-0800200c9a66" version="2"/>
+    </ClientDataReporting>
+  </ServiceDescription>
+  <ServiceDescription id="2500">
+    <ClientDataReporting schemeIdUri="urn:mpeg:dash:cta-5004:2023">
+      <CMCDParameters keys="br"/>
+    </ClientDataReporting>
+  </ServiceDescription>
+  <Period id="p0">
+    <AdaptationSet id="1" contentType="video">
+      <SegmentTemplate media="v_$Number$.m4s" duration="2" startNumber="1"/>
+      <Representation id="v1" bandwidth="1000000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>

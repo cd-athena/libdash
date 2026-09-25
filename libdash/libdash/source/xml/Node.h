@@ -63,6 +63,7 @@
 #include "../mpd/ExtendedUrlInfo.h"
 #include "../mpd/ContentSteering.h"
 #include "../mpd/Location.h"
+#include "../mpd/ClientDataReporting.h"
 #include "../mpd/SegmentURL.h"
 #include "../mpd/ServiceDescription.h"
 #include "../mpd/SubRepresentation.h"
@@ -152,6 +153,8 @@ namespace dash
                 dash::mpd::ExtendedUrlInfo*                 ToExtendedUrlInfo       ()  const;
                 dash::mpd::ContentSteering*                 ToContentSteering       ()  const;
                 dash::mpd::Location*                        ToLocation              ()  const;
+                dash::mpd::ClientDataReporting*             ToClientDataReporting   ()  const;
+                dash::mpd::CMCDParameters*                  ToCMCDParameters        ()  const;
                 dash::mpd::SegmentURL*                      ToSegmentURL            ()  const;
                 dash::mpd::SubRepresentation*               ToSubRepresentation     ()  const;
                 dash::mpd::Subset*                          ToSubset                ()  const;
