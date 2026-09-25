@@ -73,6 +73,8 @@ To also check that the parser handles the official example MPDs, clone [MPEGGrou
 ### Tests
 `libdash_mpd_test` checks the parsed values of the test MPDs in `libdash/libdash_mpd_test/data`, one test per feature area (`ctest --test-dir build -N` lists them). All test MPDs validate against the 6th-edition XML schema. GitHub Actions builds and tests libdash on Ubuntu (GCC and Clang, including a build with AddressSanitizer and UndefinedBehaviorSanitizer) and macOS, and parses all example MPDs of the MPEGGroup/DASHSchema `6th-Ed` branch.
 
+The deep smoke test (`libdash_mpd_test smoke <file.mpd>...`) opens each MPD, walks the complete object tree and calls every getter, which catches crashes, invalid pointers and uninitialised values, especially in a sanitizer build. It runs on all test MPDs and on the DASHSchema examples. To run it on further MPDs, e.g. the streams of the dash.js reference player, put them into a directory and add `-DLIBDASH_EXTRA_MPD_DIR=<directory>` when configuring.
+
 `libdash_networkpart_test` downloads files from a test server that is no longer available; build it with `-DLIBDASH_BUILD_NETWORK_TEST=OFF` to skip it.
 
 #### QTSamplePlayer

@@ -12,13 +12,15 @@
  *   libdash_mpd_test xml       <xml_structure.mpd>        checks comments and CDATA in the XML parser
  *   libdash_mpd_test imported  <list_mpd.mpd> <linked_period_resolved.mpd>
  *                                                         checks List MPDs, Linked Periods (ImportedMPD) and Period@minBufferTime
- *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses
+ *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses, then walks its complete object tree
+ *                                                  and calls every getter (deep smoke test, see MPDWalker)
  *
  * This source code and its use and distribution, is subject to the terms
  * and conditions of the applicable license agreement.
  *****************************************************************************/
 
 #include "libdash.h"
+#include "MPDWalker.h"
 
 #include <cstdio>
 #include <cstring>
@@ -524,9 +526,22 @@ static void TestSmoke (IDASHManager *manager, int count, char **paths)
     for (int i = 0; i < count; i++)
     {
         IMPD *mpd = manager->Open(paths[i]);
-        printf("%s  %s\n", mpd ? "PASS" : "FAIL", paths[i]);
         if (!mpd)
+        {
+            printf("FAIL  %s\n", paths[i]);
             failures++;
+            continue;
+        }
+
+        MPDWalker walker;
+        walker.Walk(mpd);
+
+        std::string unknown;
+        const std::map<std::string, int> &elements = walker.GetUnknownElements();
+        for (std::map<std::string, int>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+            unknown += (unknown.empty() ? " unknown: " : ", ") + it->first + " x" + std::to_string(it->second);
+
+        printf("PASS  %s  (%lu elements, %lu segment URLs%s)\n", paths[i], walker.GetElementCount(), walker.GetSegmentCount(), unknown.c_str());
         delete mpd;
     }
 }

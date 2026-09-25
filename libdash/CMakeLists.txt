@@ -10,6 +10,8 @@ option(LIBDASH_BUILD_TESTS        "Build the MPD parser tests"                  
 option(LIBDASH_BUILD_NETWORK_TEST "Build libdash_networkpart_test (needs a test server)" ON)
 set(LIBDASH_SCHEMA_EXAMPLES_DIR "" CACHE PATH
     "Directory with example MPDs (e.g. a MPEGGroup/DASHSchema checkout) to smoke-test the parser against")
+set(LIBDASH_EXTRA_MPD_DIR "" CACHE PATH
+    "Directory with further MPDs (e.g. downloaded from player sample lists) to run the deep smoke test on")
 
 # macOS: prefer the SDK / Homebrew libraries over stale frameworks in /Library/Frameworks
 if(APPLE)
