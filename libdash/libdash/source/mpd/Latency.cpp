@@ -13,7 +13,11 @@
 
 using namespace dash::mpd;
 
-Latency::Latency    ()
+Latency::Latency    () :
+                referenceId(0),
+                target(0),
+                max(0),
+                min(0)
 {
 }
 Latency::~Latency   ()

@@ -2,6 +2,7 @@
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xlink="http://www.w3.org/1999/xlink"
      profiles="urn:mpeg:dash:profile:isoff-live:2011" type="static" minBufferTime="PT2S"
      mediaPresentationDuration="PT60S">
+  <BaseURL>https://cdn.example.com/</BaseURL>
   <Period id="p0">
     <EventStream schemeIdUri="urn:example:ev" xlink:href="http://example.com/ev.xml"
                  xlink:type="simple" xlink:show="embed" presentationTimeOffset="8589934592" timescale="1"/>

@@ -14,7 +14,9 @@
 using namespace dash::mpd;
 
 LeapSecondInformation::LeapSecondInformation    ()  :
-    availabilityStartLeapOffset(0)
+    availabilityStartLeapOffset(0),
+    nextAvailabilityStartLeapOffset(0)
+
     
 {
 }

@@ -14,7 +14,10 @@
 using namespace dash::mpd;
 
 OperatingBandwidth::OperatingBandwidth    ()  :
-            mediaType("all")
+            mediaType("all"),
+            min(0),
+            max(0),
+            target(0)
 {
 }
 OperatingBandwidth::~OperatingBandwidth   ()

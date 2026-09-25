@@ -13,6 +13,8 @@ add_test(NAME mpd_cmcd
          COMMAND libdash_mpd_test cmcd ${CMAKE_CURRENT_SOURCE_DIR}/data/cmcd.mpd)
 add_test(NAME mpd_alternative_mpd
          COMMAND libdash_mpd_test altmpd ${CMAKE_CURRENT_SOURCE_DIR}/data/alternative_mpd.mpd)
+add_test(NAME mpd_xml_structure
+         COMMAND libdash_mpd_test xml ${CMAKE_CURRENT_SOURCE_DIR}/data/xml_structure.mpd)
 add_test(NAME mpd_imported_mpd
          COMMAND libdash_mpd_test imported ${CMAKE_CURRENT_SOURCE_DIR}/data/list_mpd.mpd
                                            ${CMAKE_CURRENT_SOURCE_DIR}/data/linked_period_resolved.mpd)

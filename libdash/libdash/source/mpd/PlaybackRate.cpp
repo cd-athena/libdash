@@ -13,7 +13,9 @@
 
 using namespace dash::mpd;
 
-PlaybackRate::PlaybackRate    ()
+PlaybackRate::PlaybackRate    () :
+                max(0),
+                min(0)
 {
 }
 PlaybackRate::~PlaybackRate   ()

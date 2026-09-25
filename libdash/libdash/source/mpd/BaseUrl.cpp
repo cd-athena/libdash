@@ -22,7 +22,9 @@ BaseUrl::BaseUrl    () :
             serviceLocation(""),
             byteRange(""),
             timeShiftBufferDepth(""),
-            rangeAccess(false)
+            rangeAccess(false),
+            availabilityTimeOffset(0.0),
+            availabilityTimeComplete(true)
 {
 }
 BaseUrl::~BaseUrl   ()

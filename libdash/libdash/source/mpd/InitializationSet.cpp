@@ -23,7 +23,8 @@ InitializationSet::InitializationSet    () :
                 maxHeight(0),
                 maxFrameRate(""),
                 inAllPeriods(true),
-                initialization("")
+                initialization(""),
+                id(0)
 {
 }
 InitializationSet::~InitializationSet   ()

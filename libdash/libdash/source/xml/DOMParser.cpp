@@ -38,7 +38,12 @@ bool    DOMParser::Parse                    ()
     if(this->reader == NULL)
         return false;
 
-    if(xmlTextReaderRead(this->reader)) 
+    /* skip everything before the root element, e.g. comments or processing instructions */
+    int ret = xmlTextReaderRead(this->reader);
+    while(ret == 1 && xmlTextReaderNodeType(this->reader) != Start)
+        ret = xmlTextReaderRead(this->reader);
+
+    if(ret == 1)
         this->root = this->ProcessNode();
 
     xmlFreeTextReader(this->reader);
@@ -48,71 +53,64 @@ bool    DOMParser::Parse                    ()
 
     return true;
 }
+/*
+ * Builds the node at the current reader position. Elements are read up to and including their own end tag;
+ * nested elements consume their end tags in the recursive calls, so an end tag seen here always belongs to
+ * this element. Comments, whitespace and processing instructions return NULL without moving the reader.
+ */
 Node*   DOMParser::ProcessNode              ()
 {
     int type = xmlTextReaderNodeType(this->reader);
 
-    if(type != WhiteSpace && type != Text)
-    {
-        while (type == Comment || type == WhiteSpace)
-        {
-            xmlTextReaderRead(this->reader);
-            type = xmlTextReaderNodeType(this->reader);
-        }
-
-        Node *node = new Node();
-        node->SetType(type);
-        node->SetMPDPath(Path::GetDirectoryPath(url));
-
-        if(xmlTextReaderConstName(this->reader) == NULL)
-        {
-            delete node;
-            return NULL;
-        }
-
-        std::string name    = (const char *) xmlTextReaderConstName(this->reader);
-        int         isEmpty = xmlTextReaderIsEmptyElement(this->reader);
-
-        node->SetName(name);
-
-        this->AddAttributesToNode(node);
-
-        if(isEmpty)
-            return node;
-
-        Node    *subnode    = NULL;
-        int     ret         = xmlTextReaderRead(this->reader);
-
-        while(ret == 1)
-        {
-            if(!strcmp(name.c_str(), (const char *) xmlTextReaderConstName(this->reader)))
-            {
-                return node;
-            }
-
-            subnode = this->ProcessNode();
-
-            if(subnode != NULL)
-                node->AddSubNode(subnode);
-
-            ret = xmlTextReaderRead(this->reader);
-        }
-
-        return node;
-    } else if (type == Text)
+    if(type == Text || type == CData)
     {
        const char* text = (const char *) xmlTextReaderReadString(this->reader);
 
        if(text != NULL)
        {
            Node *node = new Node();
-           node->SetType(type);
+           node->SetType(Text);
            node->SetText(text);
            xmlFree((void *) text);
            return node;
        }
+       return NULL;
     }
-    return NULL;
+
+    if(type != Start || xmlTextReaderConstName(this->reader) == NULL)
+        return NULL;
+
+    Node *node = new Node();
+    node->SetType(type);
+    node->SetMPDPath(Path::GetDirectoryPath(url));
+
+    std::string name    = (const char *) xmlTextReaderConstName(this->reader);
+    int         isEmpty = xmlTextReaderIsEmptyElement(this->reader);
+
+    node->SetName(name);
+
+    this->AddAttributesToNode(node);
+
+    if(isEmpty)
+        return node;
+
+    Node    *subnode    = NULL;
+    int     ret         = xmlTextReaderRead(this->reader);
+
+    while(ret == 1)
+    {
+        if(xmlTextReaderNodeType(this->reader) == End)
+            return node;
+
+        subnode = this->ProcessNode();
+
+        if(subnode != NULL)
+            node->AddSubNode(subnode);
+
+        ret = xmlTextReaderRead(this->reader);
+    }
+
+    return node;
 }
 void    DOMParser::AddAttributesToNode      (Node *node)
 {

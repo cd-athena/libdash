@@ -16,7 +16,9 @@ using namespace dash::mpd;
 Resync::Resync    ()  :
                  type(0),
                  dIMin(0),
-                 marker(false)
+                 marker(false),
+                 dT(0),
+                 dIMax(0)
 {
 }
 Resync::~Resync   ()

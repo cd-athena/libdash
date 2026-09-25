@@ -13,7 +13,8 @@
 
 using namespace dash::mpd;
 
-ServiceDescription::ServiceDescription    ()
+ServiceDescription::ServiceDescription    () :
+                id(0)
 {
 }
 ServiceDescription::~ServiceDescription   ()

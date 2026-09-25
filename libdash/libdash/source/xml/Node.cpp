@@ -16,6 +16,20 @@
 #include "Node.h"
 #include <cstdlib>
 
+/* Child elements of RepresentationBaseType, parsed by Node::SetCommonValuesForRep. The elements deriving from
+ * RepresentationBaseType must not store them again as additional (unknown) sub-nodes. */
+static bool IsRepresentationBaseChild   (const std::string& name)
+{
+    static const char *children[] = { "FramePacking", "AudioChannelConfiguration", "ContentProtection", "OutputProtection",
+                                      "EssentialProperty", "SupplementalProperty", "InbandEventStream", "Switching",
+                                      "RandomAccess", "GroupLabel", "Label", "ContentPopularityRate",
+                                      "ProducerReferenceTime", "Resync", "SegmentSequenceProperties" };
+    for (size_t i = 0; i < sizeof(children) / sizeof(children[0]); i++)
+        if (name == children[i])
+            return true;
+    return false;
+}
+
 using namespace dash::xml;
 using namespace dash::metrics;
 
@@ -886,7 +900,7 @@ dash::mpd::SubRepresentation*               Node::ToSubRepresentation   ()  cons
     }
     for (size_t i = 0; i < subNodes.size(); i++)
     {
-        if (subNodes.at(i)->GetName() != "FramePacking" && subNodes.at(i)->GetName() != "AudioChannelConfiguration" && subNodes.at(i)->GetName() != "ContentProtection")
+        if (!IsRepresentationBaseChild(subNodes.at(i)->GetName()))
             subRepresentation->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
@@ -1011,7 +1025,7 @@ dash::mpd::Representation*                  Node::ToRepresentation      ()  cons
             representation->SetSegmentTemplate(subNodes.at(i)->ToSegmentTemplate());
             continue;
         }
-        if (subNodes.at(i)->GetName() != "FramePacking" && subNodes.at(i)->GetName() != "AudioChannelConfiguration" && subNodes.at(i)->GetName() != "ContentProtection")
+        if (!IsRepresentationBaseChild(subNodes.at(i)->GetName()))
             representation->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
@@ -1175,7 +1189,7 @@ dash::mpd::AdaptationSet*                   Node::ToAdaptationSet       ()  cons
             adaptationSet->AddRepresentation(subNodes.at(i)->ToRepresentation());
             continue;
         }
-        if (subNodes.at(i)->GetName() != "FramePacking" && subNodes.at(i)->GetName() != "AudioChannelConfiguration" && subNodes.at(i)->GetName() != "ContentProtection")
+        if (!IsRepresentationBaseChild(subNodes.at(i)->GetName()))
             adaptationSet->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
@@ -1895,7 +1909,8 @@ dash::mpd::InitializationSet*              Node::ToInitializationSet          ()
             initializationSet->AddViewpoint(subNodes.at(i)->ToDescriptor());
             continue;
         }
-        initializationSet->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
+        if (!IsRepresentationBaseChild(subNodes.at(i)->GetName()))
+            initializationSet->AddAdditionalSubNode((xml::INode *) new Node(*(subNodes.at(i))));
     }
 
     initializationSet->AddRawAttributes(this->attributes);

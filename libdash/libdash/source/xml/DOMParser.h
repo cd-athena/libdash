@@ -29,6 +29,7 @@ namespace dash
             Comment         = 8,
             WhiteSpace      = 14,
             Text            = 3,
+            CData           = 4,
         };
 
         class DOMParser

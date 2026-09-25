@@ -14,7 +14,9 @@
 using namespace dash::mpd;
 
 RandomAccess::RandomAccess    ()  :
-                 type("closed")
+                 type("closed"),
+                 interval(0),
+                 bandwidth(0)
 {
 }
 RandomAccess::~RandomAccess   ()

@@ -13,7 +13,9 @@
 
 using namespace dash::mpd;
 
-UIntPairs::UIntPairs    ()    
+UIntPairs::UIntPairs    () :
+                latency(0),
+                quality(0)
 {
 }
 UIntPairs::~UIntPairs   ()

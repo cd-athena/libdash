@@ -16,7 +16,9 @@ using namespace dash::mpd;
 ProducerReferenceTime::ProducerReferenceTime    ()  :
                  utcTiming(NULL),
                  inband(false),
-                 type("encoder")
+                 type("encoder"),
+                 id(0),
+                 presentationTime(0)
 {
 }
 ProducerReferenceTime::~ProducerReferenceTime   ()

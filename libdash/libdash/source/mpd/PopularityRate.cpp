@@ -14,7 +14,9 @@
 using namespace dash::mpd;
 
 PopularityRate::PopularityRate    ()  :
-                 r(0)
+                 r(0),
+                 popularityRate(0),
+                 start(0)
 {
 }
 PopularityRate::~PopularityRate   ()

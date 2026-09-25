@@ -14,7 +14,8 @@
 using namespace dash::mpd;
 
 Switching::Switching    ()  :
-                 type("media")
+                 type("media"),
+                 interval(0)
 {
 }
 Switching::~Switching   ()

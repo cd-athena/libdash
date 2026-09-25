@@ -32,7 +32,8 @@ MPD::MPD    () :
         timeShiftBufferDepth(""),
         suggestedPresentationDelay(""),
         maxSegmentDuration(""),
-        maxSubsegmentDuration("")
+        maxSubsegmentDuration(""),
+        fetchTime(0)
 {
     this->mpdPathBaseUrl = NULL;
 }

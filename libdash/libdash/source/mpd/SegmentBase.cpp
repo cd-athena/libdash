@@ -27,7 +27,9 @@ SegmentBase::SegmentBase    ()  :
                 presentationTimeOffset(0),
                 indexRange(""),
                 indexRangeExact(false),
-                availabilityTimeOffset(0.0)
+                availabilityTimeOffset(0.0),
+                presentationDuration(0),
+                availabilityTimeComplete(true)
 {
 }
 SegmentBase::~SegmentBase   ()

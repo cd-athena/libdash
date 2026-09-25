@@ -9,6 +9,7 @@
  *   libdash_mpd_test steering  <content_steering.mpd>     checks ContentSteering and @serviceLocation
  *   libdash_mpd_test cmcd      <cmcd.mpd>                 checks ClientDataReporting and CMCDParameters
  *   libdash_mpd_test altmpd    <alternative_mpd.mpd>      checks Alternative MPD events, Event content and PlaybackRestrictions
+ *   libdash_mpd_test xml       <xml_structure.mpd>        checks comments and CDATA in the XML parser
  *   libdash_mpd_test imported  <list_mpd.mpd> <linked_period_resolved.mpd>
  *                                                         checks List MPDs, Linked Periods (ImportedMPD) and Period@minBufferTime
  *   libdash_mpd_test smoke  <file.mpd>...         checks that every file parses
@@ -64,6 +65,15 @@ static int TestFields (IDASHManager *manager, char *path)
     IRepresentation *videoRepresentation = video->GetRepresentation().at(0);
     CHECK(videoRepresentation->GetSupplementalProperties().size() == 1 && videoRepresentation->GetSupplementalProperties().at(0)->GetId() == "sp1");
 
+    // Parsed RepresentationBase children are not stored again as unknown sub-nodes
+    CHECK(video->GetAdditionalSubNodes().empty());
+    CHECK(videoRepresentation->GetAdditionalSubNodes().empty());
+
+    // Defaults of members that used to be uninitialised
+    CHECK(video->GetSegmentTemplate()->IsAvailabilityTimeComplete());
+    CHECK(video->GetSegmentTemplate()->GetPresentationDuration() == 0);
+    CHECK(mpd->GetBaseUrls().size() == 1 && mpd->GetBaseUrls().at(0)->IsAvailabilityTimeComplete());
+
     ISegmentTemplate *segmentTemplate = video->GetSegmentTemplate();
     CHECK(segmentTemplate->GetPresentationTimeOffset() == 5000000000ULL);
     CHECK(segmentTemplate->GetFailoverContent() != NULL);
@@ -102,6 +112,7 @@ static int TestSequences (IDASHManager *manager, char *path)
     IAdaptationSet *video = period->GetAdaptationSets().at(0);
 
     CHECK(video->GetSegmentSequenceProperties().size() == 2);
+    CHECK(video->GetAdditionalSubNodes().empty());
     ISegmentSequenceProperties *ssp0 = video->GetSegmentSequenceProperties().at(0);
     CHECK(ssp0->GetSapType() == 2);
     CHECK(ssp0->GetCadence() == 4);
@@ -479,6 +490,35 @@ static int TestImported (IDASHManager *manager, char *listPath, char *resolvedPa
     delete resolved;
     return 0;
 }
+static int TestXMLStructure (IDASHManager *manager, char *path)
+{
+    IMPD *mpd = manager->Open(path);
+    CHECK(mpd != NULL);
+    if (!mpd)
+        return 1;
+
+    CHECK(mpd->GetPeriods().size() == 1);
+    CHECK(mpd->GetAdditionalSubNodes().empty());
+    IPeriod *period = mpd->GetPeriods().at(0);
+
+    // A comment right before an end tag must not swallow the following siblings
+    IAdaptationSet *adaptationSet = period->GetAdaptationSets().at(0);
+    CHECK(adaptationSet->GetContentProtections().size() == 2);
+    CHECK(adaptationSet->GetContentProtections().size() == 2 && adaptationSet->GetContentProtections().at(1)->GetValue() == "MSPR 2.0");
+    CHECK(adaptationSet->GetContentProtections().size() == 2 && adaptationSet->GetContentProtections().at(0)->GetAdditionalSubNodes().size() == 1);
+    CHECK(adaptationSet->GetRole().size() == 1);
+    CHECK(adaptationSet->GetRepresentation().size() == 1);
+    CHECK(adaptationSet->GetAdditionalSubNodes().empty());
+
+    // CDATA is event content; comments inside content are ignored
+    const std::vector<IEvent *> &events = period->GetEventStreams().at(0)->GetEvents();
+    CHECK(events.size() == 2);
+    CHECK(events.size() == 2 && events.at(0)->GetContent() == "<not>markup</not> & text");
+    CHECK(events.size() == 2 && events.at(1)->GetContent() == "plain");
+
+    delete mpd;
+    return 0;
+}
 static void TestSmoke (IDASHManager *manager, int count, char **paths)
 {
     for (int i = 0; i < count; i++)
@@ -493,9 +533,9 @@ static void TestSmoke (IDASHManager *manager, int count, char **paths)
 
 int main (int argc, char **argv)
 {
-    if (argc < 3 || (!strcmp(argv[1], "imported") && argc < 4) || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "altmpd") && strcmp(argv[1], "imported") && strcmp(argv[1], "smoke")))
+    if (argc < 3 || (!strcmp(argv[1], "imported") && argc < 4) || (strcmp(argv[1], "fields") && strcmp(argv[1], "sequences") && strcmp(argv[1], "urlparams") && strcmp(argv[1], "steering") && strcmp(argv[1], "cmcd") && strcmp(argv[1], "altmpd") && strcmp(argv[1], "imported") && strcmp(argv[1], "xml") && strcmp(argv[1], "smoke")))
     {
-        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | altmpd <alternative_mpd.mpd> | imported <list_mpd.mpd> <linked_period_resolved.mpd> | smoke <file.mpd>...\n", argv[0]);
+        fprintf(stderr, "usage: %s fields <pre6ed_fields.mpd> | sequences <segment_sequences.mpd> | urlparams <url_parameters.mpd> | steering <content_steering.mpd> | cmcd <cmcd.mpd> | altmpd <alternative_mpd.mpd> | xml <xml_structure.mpd> | imported <list_mpd.mpd> <linked_period_resolved.mpd> | smoke <file.mpd>...\n", argv[0]);
         return 2;
     }
 
@@ -513,6 +553,8 @@ int main (int argc, char **argv)
         TestCMCD(manager, argv[2]);
     else if (!strcmp(argv[1], "altmpd"))
         TestAlternativeMPD(manager, argv[2]);
+    else if (!strcmp(argv[1], "xml"))
+        TestXMLStructure(manager, argv[2]);
     else if (!strcmp(argv[1], "imported"))
         TestImported(manager, argv[2], argv[3]);
     else

@@ -43,7 +43,9 @@ AdaptationSet::AdaptationSet    () :
                 segmentAlignment(false),
                 subsegmentAlignment(false),
                 isBitstreamSwitching(false),
-                initializationPrincipal("")
+                initializationPrincipal(""),
+                group(0),
+                subsegmentStartsWithSAP(0)
 {
 }
 AdaptationSet::~AdaptationSet   ()

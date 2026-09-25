@@ -14,7 +14,11 @@
 using namespace dash::mpd;
 
 OperatingQuality::OperatingQuality    ()  :
-            mediaType("any")
+            mediaType("any"),
+            min(0),
+            max(0),
+            target(0),
+            maxDifference(0)
 {
 }
 OperatingQuality::~OperatingQuality   ()
