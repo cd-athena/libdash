@@ -52,30 +52,44 @@ You can find the latest sources and binaries on github.
 
 ## How to use
 
-### Windows
-Use CMake to generate a Visual Studio solution, e.g. `cmake -S libdash/libdash -B build -G "Visual Studio 17 2022"`, then build it in Visual Studio or with `cmake --build build --config Release`. On Windows, CMake looks for libxml2, libcurl, zlib and iconv in the prebuilt packages shipped in `libdash/libdash`.
-
-The Visual Studio 2010 solution `libdash/libdash.sln` is outdated: it does not contain the source files added since 2021 and does not build the current library. The Windows build has not been tested with the 6th-edition changes.
+### Requirements
+CMake 3.13 or newer (3.21 or newer for the presets in `CMakePresets.json`), a C++11 compiler, libxml2, libcurl and zlib.
 
 ### Linux and macOS
-Requires CMake 3.12 or newer, a C++11 compiler, libxml2, libcurl and zlib.
-
 1. Install the dependencies
    * Ubuntu/Debian: `sudo apt-get install build-essential cmake libxml2-dev libcurl4-openssl-dev zlib1g-dev`
    * macOS: libxml2, libcurl and zlib come with the SDK (Xcode or Command Line Tools); install CMake with `brew install cmake`
 2. git clone https://github.com/bitmovin/libdash.git
 3. cmake -S libdash/libdash -B build
 4. cmake --build build --parallel
-5. The library and test programs are in `build/bin`. Run the MPD parser tests with `ctest --test-dir build`
+5. The library and test programs are in `build/bin`. Run the MPD parser tests with `cd build && ctest` (with CMake 3.20 or newer also `ctest --test-dir build`)
+
+Alternatively, with CMake 3.21 or newer: `cmake --preset default`, `cmake --build --preset default` and `ctest --preset default` in `libdash/libdash`.
 
 To also check that the parser handles the official example MPDs, clone [MPEGGroup/DASHSchema](https://github.com/MPEGGroup/DASHSchema) and add `-DLIBDASH_SCHEMA_EXAMPLES_DIR=<path to DASHSchema>` in step 3.
 
+### Windows
+The prebuilt libxml2, libcurl, zlib and iconv libraries shipped in `libdash/libdash` are **32-bit only**. For a 64-bit build, the dependencies come from [vcpkg](https://vcpkg.io), using the manifest `libdash/libdash/vcpkg.json`. `CMakePresets.json` provides both variants for Visual Studio 2022:
+
+| Preset | Architecture | Dependencies |
+|---|---|---|
+| `windows-x64` | 64-bit | vcpkg (set the environment variable `VCPKG_ROOT` to the vcpkg installation) |
+| `windows-x86` | 32-bit | bundled libraries; their DLLs are copied next to the binaries |
+
+* **Visual Studio 2022**: open the folder `libdash/libdash` (File > Open > Folder) and select the preset in the toolbar.
+* **Visual Studio Code** with the CMake Tools extension: open the folder `libdash/libdash` and select the configure preset (CMake: Select Configure Preset).
+* **Command line** (Developer PowerShell): in `libdash/libdash`, run `cmake --preset windows-x64`, `cmake --build --preset windows-x64` and `ctest --preset windows-x64`.
+
+Without presets, pass the architecture and, for 64-bit, the vcpkg toolchain explicitly, e.g. `cmake -S libdash/libdash -B build -A x64 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake`. Visual Studio is a multi-configuration generator, so give the configuration when building and testing: `cmake --build build --config Release` and `cd build && ctest -C Release`.
+
+The Visual Studio 2010 solution `libdash/libdash.sln` is outdated: it does not contain the source files added since 2021 and does not build the current library.
+
 ### Tests
-`libdash_mpd_test` checks the parsed values of the test MPDs in `libdash/libdash_mpd_test/data`, one test per feature area (`ctest --test-dir build -N` lists them). All test MPDs validate against the 6th-edition XML schema. GitHub Actions builds and tests libdash on Ubuntu (GCC and Clang, including a build with AddressSanitizer and UndefinedBehaviorSanitizer) and macOS, and parses all example MPDs of the MPEGGroup/DASHSchema `6th-Ed` branch.
+`libdash_mpd_test` checks the parsed values of the test MPDs in `libdash/libdash_mpd_test/data`, one test per feature area (`ctest -N` in the build directory lists them). All test MPDs validate against the 6th-edition XML schema. GitHub Actions builds and tests libdash on Ubuntu (GCC and Clang, including a build with AddressSanitizer and UndefinedBehaviorSanitizer, and a build with the minimum CMake version 3.13), macOS and Windows (MSVC, 64-bit with vcpkg and 32-bit with the bundled libraries), and parses all example MPDs of the MPEGGroup/DASHSchema `6th-Ed` branch.
 
 The deep smoke test (`libdash_mpd_test smoke <file.mpd>...`) opens each MPD, walks the complete object tree and calls every getter, which catches crashes, invalid pointers and uninitialised values, especially in a sanitizer build. It runs on all test MPDs and on the DASHSchema examples. To run it on further MPDs, e.g. the streams of the dash.js reference player, put them into a directory and add `-DLIBDASH_EXTRA_MPD_DIR=<directory>` when configuring.
 
-`libdash_networkpart_test` downloads files from a test server that is no longer available; build it with `-DLIBDASH_BUILD_NETWORK_TEST=OFF` to skip it.
+`libdash_networkpart_test` downloads files from a test server that is no longer available, so it is not built by default; build it with `-DLIBDASH_BUILD_NETWORK_TEST=ON`.
 
 #### QTSamplePlayer
 Prerequisite: libdash must be built as described in the previous section.

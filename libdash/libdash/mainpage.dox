@@ -41,7 +41,7 @@ You can find the latest sources and binaries in our [download section] (http://w
 ## How to use
 
 ### Windows, Linux and macOS
-Build with CMake 3.12 or newer: `cmake -S libdash/libdash -B build`, `cmake --build build`, and run the MPD parser tests with `ctest --test-dir build`.
+Build with CMake 3.13 or newer: `cmake -S libdash/libdash -B build`, `cmake --build build`, and run the MPD parser tests with `cd build && ctest` (or `ctest --test-dir build` with CMake 3.20 or newer). On Windows, see README.md for the 32-bit and 64-bit (vcpkg) builds.
 See README.md for the dependencies on each platform.
 
 ## License

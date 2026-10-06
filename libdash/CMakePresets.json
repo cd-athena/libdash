@@ -1,0 +1,42 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default (Linux, macOS)",
+      "description": "Default generator; libxml2, libcurl and zlib from the system",
+      "binaryDir": "${sourceDir}/../build/${presetName}",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "windows-x64",
+      "displayName": "Windows x64 (Visual Studio 2022, vcpkg)",
+      "description": "64-bit build; libxml2, libcurl and zlib are installed by vcpkg from vcpkg.json (needs VCPKG_ROOT)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/../build/${presetName}",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "windows-x86",
+      "displayName": "Windows x86 (Visual Studio 2022, bundled libraries)",
+      "description": "32-bit build with the prebuilt libraries shipped in the repository",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "Win32",
+      "binaryDir": "${sourceDir}/../build/${presetName}",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "default",     "configurePreset": "default" },
+    { "name": "windows-x64", "configurePreset": "windows-x64", "configuration": "Release" },
+    { "name": "windows-x86", "configurePreset": "windows-x86", "configuration": "Release" }
+  ],
+  "testPresets": [
+    { "name": "default",     "configurePreset": "default",     "output": { "outputOnFailure": true } },
+    { "name": "windows-x64", "configurePreset": "windows-x64", "configuration": "Release", "output": { "outputOnFailure": true } },
+    { "name": "windows-x86", "configurePreset": "windows-x86", "configuration": "Release", "output": { "outputOnFailure": true } }
+  ]
+}

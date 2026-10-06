@@ -52,3 +52,59 @@ jobs:
           ASAN_OPTIONS: detect_leaks=0
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
         run: ctest --test-dir build --output-on-failure
+
+  windows:
+    name: windows-latest / msvc / ${{ matrix.arch }} / ${{ matrix.arch == 'x64' && 'vcpkg' || 'bundled libraries' }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, x86]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check out DASHSchema (6th edition examples)
+        uses: actions/checkout@v5
+        with:
+          repository: MPEGGroup/DASHSchema
+          ref: 6th-Ed
+          path: DASHSchema
+
+      - name: Use the vcpkg installation of the runner
+        if: matrix.arch == 'x64'
+        shell: pwsh
+        run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+
+      - name: Configure
+        working-directory: libdash
+        run: cmake --preset windows-${{ matrix.arch }} -DLIBDASH_BUILD_NETWORK_TEST=ON -DLIBDASH_SCHEMA_EXAMPLES_DIR=${{ github.workspace }}/DASHSchema
+
+      - name: Build
+        working-directory: libdash
+        run: cmake --build --preset windows-${{ matrix.arch }} --parallel
+
+      - name: Test
+        working-directory: libdash
+        run: ctest --preset windows-${{ matrix.arch }}
+
+  cmake-minimum:
+    name: ubuntu-latest / gcc / CMake 3.13 (minimum version)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies and CMake 3.13
+        run: |
+          sudo apt-get update && sudo apt-get install -y libxml2-dev libcurl4-openssl-dev zlib1g-dev
+          python3 -m venv "$RUNNER_TEMP/cmake313"
+          "$RUNNER_TEMP/cmake313/bin/pip" install cmake==3.13.3
+          echo "$RUNNER_TEMP/cmake313/bin" >> "$GITHUB_PATH"
+
+      - name: Configure, build and test (without -S/-B or --test-dir)
+        run: |
+          cmake --version
+          mkdir build && cd build
+          cmake ../libdash -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -- -j2
+          ctest --output-on-failure

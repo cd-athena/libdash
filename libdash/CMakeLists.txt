@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.31)
+cmake_minimum_required(VERSION 3.13...3.31)
 
 project(libdash LANGUAGES CXX)
 
@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(LIBDASH_BUILD_TESTS        "Build the MPD parser tests"                        ON)
-option(LIBDASH_BUILD_NETWORK_TEST "Build libdash_networkpart_test (needs a test server)" ON)
+option(LIBDASH_BUILD_NETWORK_TEST "Build libdash_networkpart_test (its test server is no longer available)" OFF)
 set(LIBDASH_SCHEMA_EXAMPLES_DIR "" CACHE PATH
     "Directory with example MPDs (e.g. a MPEGGroup/DASHSchema checkout) to smoke-test the parser against")
 set(LIBDASH_EXTRA_MPD_DIR "" CACHE PATH
@@ -18,13 +18,17 @@ if(APPLE)
     set(CMAKE_FIND_FRAMEWORK LAST)
 endif()
 
-# Windows: use the prebuilt dependencies shipped in this repository
-if(WIN32)
-    list(APPEND CMAKE_PREFIX_PATH
-        ${CMAKE_CURRENT_SOURCE_DIR}/libxml2
-        ${CMAKE_CURRENT_SOURCE_DIR}/libcurl
-        ${CMAKE_CURRENT_SOURCE_DIR}/zlib
-        ${CMAKE_CURRENT_SOURCE_DIR}/iconv)
+# Windows: the prebuilt libxml2, libcurl, zlib and iconv shipped in this repository are 32-bit (x86) only.
+# They are used for 32-bit builds (e.g. -A Win32). 64-bit builds need the dependencies from elsewhere,
+# e.g. vcpkg with the vcpkg.json manifest in this directory (see CMakePresets.json).
+set(LIBDASH_BUNDLED_DEPENDENCIES OFF)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(LIBDASH_BUNDLED_DEPENDENCIES ON)
+    foreach(dependency libxml2 libcurl zlib iconv)
+        list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${dependency})
+        file(GLOB dlls ${CMAKE_CURRENT_SOURCE_DIR}/${dependency}/bin/*.dll)
+        list(APPEND LIBDASH_BUNDLED_DLLS ${dlls})
+    endforeach()
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)

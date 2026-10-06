@@ -1,0 +1,10 @@
+{
+  "name": "libdash",
+  "version-string": "2.2",
+  "description": "MPEG-DASH (ISO/IEC 23009-1) MPD parsing and download library",
+  "dependencies": [
+    "curl",
+    "libxml2",
+    "zlib"
+  ]
+}
