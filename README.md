@@ -69,23 +69,24 @@ Alternatively, with CMake 3.21 or newer: `cmake --preset default`, `cmake --buil
 To also check that the parser handles the official example MPDs, clone [MPEGGroup/DASHSchema](https://github.com/MPEGGroup/DASHSchema) and add `-DLIBDASH_SCHEMA_EXAMPLES_DIR=<path to DASHSchema>` in step 3.
 
 ### Windows
-The prebuilt libxml2, libcurl, zlib and iconv libraries shipped in `libdash/libdash` are **32-bit only**. For a 64-bit build, the dependencies come from [vcpkg](https://vcpkg.io), using the manifest `libdash/libdash/vcpkg.json`. `CMakePresets.json` provides both variants; they use the newest installed Visual Studio (2022 or newer):
+The dependencies are installed by [vcpkg](https://vcpkg.io) from the manifest `libdash/libdash/vcpkg.json`; set the environment variable `VCPKG_ROOT` to the vcpkg installation. `CMakePresets.json` provides the following presets, which use the newest installed Visual Studio (2022 or newer):
 
 | Preset | Architecture | Dependencies |
 |---|---|---|
-| `windows-x64` | 64-bit | vcpkg (set the environment variable `VCPKG_ROOT` to the vcpkg installation) |
-| `windows-x86` | 32-bit | bundled libraries; their DLLs are copied next to the binaries |
+| `windows-x64` | 64-bit | vcpkg |
+| `windows-x86` | 32-bit | vcpkg |
+| `windows-x86-bundled` | 32-bit | the prebuilt libraries shipped in `libdash/libdash` (libcurl 7.28.1, libxml2 2.7.8 from 2010–2012). They need the *Microsoft Visual C++ 2010 Redistributable (x86)*; their DLLs are copied next to the binaries. Only recommended where vcpkg cannot be used. |
 
 * **Visual Studio**: open the folder `libdash/libdash` (File > Open > Folder) and select the preset in the toolbar.
 * **Visual Studio Code** with the CMake Tools extension: open the folder `libdash/libdash` and select the configure preset (CMake: Select Configure Preset).
 * **Command line** (Developer PowerShell): in `libdash/libdash`, run `cmake --preset windows-x64`, `cmake --build --preset windows-x64` and `ctest --preset windows-x64`.
 
-Without presets, pass the architecture and, for 64-bit, the vcpkg toolchain explicitly, e.g. `cmake -S libdash/libdash -B build -A x64 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake`. Visual Studio is a multi-configuration generator, so give the configuration when building and testing: `cmake --build build --config Release` and `cd build && ctest -C Release`.
+Without presets, pass the architecture and the vcpkg toolchain explicitly, e.g. `cmake -S libdash/libdash -B build -A x64 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake`. Visual Studio is a multi-configuration generator, so give the configuration when building and testing: `cmake --build build --config Release` and `cd build && ctest -C Release`.
 
 The Visual Studio 2010 solution `libdash/libdash.sln` is outdated: it does not contain the source files added since 2021 and does not build the current library.
 
 ### Tests
-`libdash_mpd_test` checks the parsed values of the test MPDs in `libdash/libdash_mpd_test/data`, one test per feature area (`ctest -N` in the build directory lists them). All test MPDs validate against the 6th-edition XML schema. GitHub Actions builds and tests libdash on Ubuntu (GCC and Clang, including a build with AddressSanitizer and UndefinedBehaviorSanitizer, and a build with the minimum CMake version 3.13), macOS and Windows (MSVC, 64-bit with vcpkg and 32-bit with the bundled libraries), and parses all example MPDs of the MPEGGroup/DASHSchema `6th-Ed` branch.
+`libdash_mpd_test` checks the parsed values of the test MPDs in `libdash/libdash_mpd_test/data`, one test per feature area (`ctest -N` in the build directory lists them). All test MPDs validate against the 6th-edition XML schema. GitHub Actions builds and tests libdash on Ubuntu (GCC and Clang, including a build with AddressSanitizer and UndefinedBehaviorSanitizer, and a build with the minimum CMake version 3.13), macOS and Windows (MSVC; 64-bit and 32-bit with vcpkg, and 32-bit with the bundled libraries), and parses all example MPDs of the MPEGGroup/DASHSchema `6th-Ed` branch.
 
 The deep smoke test (`libdash_mpd_test smoke <file.mpd>...`) opens each MPD, walks the complete object tree and calls every getter, which catches crashes, invalid pointers and uninitialised values, especially in a sanitizer build. It runs on all test MPDs and on the DASHSchema examples. To run it on further MPDs, e.g. the streams of the dash.js reference player, put them into a directory and add `-DLIBDASH_EXTRA_MPD_DIR=<directory>` when configuring.
 

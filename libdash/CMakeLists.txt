@@ -18,12 +18,19 @@ if(APPLE)
     set(CMAKE_FIND_FRAMEWORK LAST)
 endif()
 
-# Windows: the prebuilt libxml2, libcurl, zlib and iconv shipped in this repository are 32-bit (x86) only.
-# They are used for 32-bit builds (e.g. -A Win32). 64-bit builds need the dependencies from elsewhere,
-# e.g. vcpkg with the vcpkg.json manifest in this directory (see CMakePresets.json).
-set(LIBDASH_BUNDLED_DEPENDENCIES OFF)
-if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(LIBDASH_BUNDLED_DEPENDENCIES ON)
+# Windows: the dependencies normally come from vcpkg (vcpkg.json in this directory, see CMakePresets.json).
+# The prebuilt libxml2, libcurl, zlib and iconv shipped in this repository are old (2010-2012), 32-bit only,
+# and need the Microsoft Visual C++ 2010 runtime (MSVCR100.dll); they are only used as a fallback.
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT DEFINED VCPKG_TOOLCHAIN)
+    set(bundled_default ON)
+else()
+    set(bundled_default OFF)
+endif()
+option(LIBDASH_BUNDLED_DEPENDENCIES "Windows, 32-bit only: use the prebuilt libraries shipped in this repository" ${bundled_default})
+if(LIBDASH_BUNDLED_DEPENDENCIES)
+    if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+        message(FATAL_ERROR "LIBDASH_BUNDLED_DEPENDENCIES requires a 32-bit Windows build (e.g. -A Win32)")
+    endif()
     foreach(dependency libxml2 libcurl zlib iconv)
         list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${dependency})
         file(GLOB dlls ${CMAKE_CURRENT_SOURCE_DIR}/${dependency}/bin/*.dll)

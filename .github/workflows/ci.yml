@@ -51,15 +51,15 @@ jobs:
           # libdash has known leaks; report memory errors and UB, not leaks (yet)
           ASAN_OPTIONS: detect_leaks=0
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build --output-on-failure --timeout 300
 
   windows:
-    name: windows-latest / msvc / ${{ matrix.arch }} / ${{ matrix.arch == 'x64' && 'vcpkg' || 'bundled libraries' }}
+    name: windows-latest / msvc / ${{ matrix.preset }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64, x86]
+        preset: [windows-x64, windows-x86, windows-x86-bundled]
 
     steps:
       - uses: actions/checkout@v5
@@ -72,29 +72,33 @@ jobs:
           path: DASHSchema
 
       - name: Use the vcpkg installation of the runner
-        if: matrix.arch == 'x64'
+        if: matrix.preset != 'windows-x86-bundled'
         shell: pwsh
         run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
 
       - name: Cache vcpkg binary packages
-        if: matrix.arch == 'x64'
+        if: matrix.preset != 'windows-x86-bundled'
         uses: actions/cache@v4
         with:
           path: ~\AppData\Local\vcpkg\archives
-          key: vcpkg-${{ runner.os }}-x64-${{ hashFiles('libdash/vcpkg.json') }}
-          restore-keys: vcpkg-${{ runner.os }}-x64-
+          key: vcpkg-${{ matrix.preset }}-${{ hashFiles('libdash/vcpkg.json') }}
+          restore-keys: vcpkg-${{ matrix.preset }}-
+
+      - name: Install the Visual C++ 2010 runtime needed by the bundled libraries
+        if: matrix.preset == 'windows-x86-bundled'
+        run: choco install vcredist2010 -y --no-progress
 
       - name: Configure
         working-directory: libdash
-        run: cmake --preset windows-${{ matrix.arch }} -DLIBDASH_BUILD_NETWORK_TEST=ON -DLIBDASH_SCHEMA_EXAMPLES_DIR=${{ github.workspace }}/DASHSchema
+        run: cmake --preset ${{ matrix.preset }} -DLIBDASH_BUILD_NETWORK_TEST=ON -DLIBDASH_SCHEMA_EXAMPLES_DIR=${{ github.workspace }}/DASHSchema
 
       - name: Build
         working-directory: libdash
-        run: cmake --build --preset windows-${{ matrix.arch }} --parallel
+        run: cmake --build --preset ${{ matrix.preset }} --parallel
 
       - name: Test
         working-directory: libdash
-        run: ctest --preset windows-${{ matrix.arch }}
+        run: ctest --preset ${{ matrix.preset }}
 
   cmake-minimum:
     name: ubuntu-latest / gcc / CMake 3.13 (minimum version)
@@ -114,4 +118,4 @@ jobs:
           mkdir build && cd build
           cmake ../libdash -DCMAKE_BUILD_TYPE=Release
           cmake --build . -- -j2
-          ctest --output-on-failure
+          ctest --output-on-failure --timeout 300

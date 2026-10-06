@@ -6,9 +6,8 @@ find_package(Threads REQUIRED)
 if(NOT LibXml2_FOUND OR NOT ZLIB_FOUND OR NOT CURL_FOUND)
     if(WIN32 AND NOT LIBDASH_BUNDLED_DEPENDENCIES)
         message(FATAL_ERROR
-            "libxml2, libcurl or zlib not found. The libraries shipped in this repository are 32-bit only; "
-            "for a 64-bit build install them with vcpkg (vcpkg.json) and use the vcpkg toolchain, "
-            "e.g. with the 'windows-x64' preset, or configure a 32-bit build with -A Win32.")
+            "libxml2, libcurl or zlib not found. Install them with vcpkg (vcpkg.json) and use the vcpkg toolchain, "
+            "e.g. with the 'windows-x64' or 'windows-x86' preset.")
     endif()
     message(FATAL_ERROR "libxml2, libcurl and zlib (including development files) are required.")
 endif()

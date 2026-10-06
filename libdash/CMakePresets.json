@@ -30,10 +30,29 @@
     },
     {
       "name": "windows-x86",
-      "displayName": "Windows x86 (Visual Studio, bundled libraries)",
-      "description": "32-bit build with the prebuilt libraries shipped in the repository",
+      "displayName": "Windows x86 (Visual Studio, vcpkg)",
+      "description": "32-bit build; libxml2, libcurl and zlib are installed by vcpkg from vcpkg.json (needs VCPKG_ROOT)",
       "architecture": "Win32",
       "binaryDir": "${sourceDir}/../build/${presetName}",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x86-windows"
+      }
+    },
+    {
+      "name": "windows-x86-bundled",
+      "displayName": "Windows x86 (Visual Studio, bundled libraries)",
+      "description": "32-bit build with the old prebuilt libraries shipped in the repository; needs the Microsoft Visual C++ 2010 Redistributable (x86)",
+      "architecture": "Win32",
+      "binaryDir": "${sourceDir}/../build/${presetName}",
+      "cacheVariables": {
+        "LIBDASH_BUNDLED_DEPENDENCIES": "ON"
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -55,6 +74,11 @@
       "name": "windows-x86",
       "configurePreset": "windows-x86",
       "configuration": "Release"
+    },
+    {
+      "name": "windows-x86-bundled",
+      "configurePreset": "windows-x86-bundled",
+      "configuration": "Release"
     }
   ],
   "testPresets": [
@@ -63,6 +87,9 @@
       "configurePreset": "default",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -71,6 +98,9 @@
       "configuration": "Release",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -79,6 +109,20 @@
       "configuration": "Release",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "windows-x86-bundled",
+      "configurePreset": "windows-x86-bundled",
+      "configuration": "Release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     }
   ]
