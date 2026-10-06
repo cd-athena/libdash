@@ -69,14 +69,14 @@ Alternatively, with CMake 3.21 or newer: `cmake --preset default`, `cmake --buil
 To also check that the parser handles the official example MPDs, clone [MPEGGroup/DASHSchema](https://github.com/MPEGGroup/DASHSchema) and add `-DLIBDASH_SCHEMA_EXAMPLES_DIR=<path to DASHSchema>` in step 3.
 
 ### Windows
-The prebuilt libxml2, libcurl, zlib and iconv libraries shipped in `libdash/libdash` are **32-bit only**. For a 64-bit build, the dependencies come from [vcpkg](https://vcpkg.io), using the manifest `libdash/libdash/vcpkg.json`. `CMakePresets.json` provides both variants for Visual Studio 2022:
+The prebuilt libxml2, libcurl, zlib and iconv libraries shipped in `libdash/libdash` are **32-bit only**. For a 64-bit build, the dependencies come from [vcpkg](https://vcpkg.io), using the manifest `libdash/libdash/vcpkg.json`. `CMakePresets.json` provides both variants; they use the newest installed Visual Studio (2022 or newer):
 
 | Preset | Architecture | Dependencies |
 |---|---|---|
 | `windows-x64` | 64-bit | vcpkg (set the environment variable `VCPKG_ROOT` to the vcpkg installation) |
 | `windows-x86` | 32-bit | bundled libraries; their DLLs are copied next to the binaries |
 
-* **Visual Studio 2022**: open the folder `libdash/libdash` (File > Open > Folder) and select the preset in the toolbar.
+* **Visual Studio**: open the folder `libdash/libdash` (File > Open > Folder) and select the preset in the toolbar.
 * **Visual Studio Code** with the CMake Tools extension: open the folder `libdash/libdash` and select the configure preset (CMake: Select Configure Preset).
 * **Command line** (Developer PowerShell): in `libdash/libdash`, run `cmake --preset windows-x64`, `cmake --build --preset windows-x64` and `ctest --preset windows-x64`.
 

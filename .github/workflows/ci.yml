@@ -76,6 +76,14 @@ jobs:
         shell: pwsh
         run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
 
+      - name: Cache vcpkg binary packages
+        if: matrix.arch == 'x64'
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\vcpkg\archives
+          key: vcpkg-${{ runner.os }}-x64-${{ hashFiles('libdash/vcpkg.json') }}
+          restore-keys: vcpkg-${{ runner.os }}-x64-
+
       - name: Configure
         working-directory: libdash
         run: cmake --preset windows-${{ matrix.arch }} -DLIBDASH_BUILD_NETWORK_TEST=ON -DLIBDASH_SCHEMA_EXAMPLES_DIR=${{ github.workspace }}/DASHSchema
@@ -98,7 +106,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y libxml2-dev libcurl4-openssl-dev zlib1g-dev
           python3 -m venv "$RUNNER_TEMP/cmake313"
-          "$RUNNER_TEMP/cmake313/bin/pip" install cmake==3.13.3
+          "$RUNNER_TEMP/cmake313/bin/pip" install cmake==3.13.1
           echo "$RUNNER_TEMP/cmake313/bin" >> "$GITHUB_PATH"
 
       - name: Configure, build and test (without -S/-B or --test-dir)
